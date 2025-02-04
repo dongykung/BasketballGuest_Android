@@ -4,6 +4,7 @@ import com.dkproject.data.Repository.AuthRepositoryImpl
 import com.dkproject.domain.repository.AuthRepository
 import com.dkproject.domain.usecase.auth.CheckFirstUserUseCase
 import com.dkproject.domain.usecase.auth.CheckNicknameUseCase
+import com.dkproject.domain.usecase.auth.UploadUserDataUseCase
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -23,6 +24,11 @@ object ProvideAuthModule {
     @Provides
     fun provideCheckUserNickname(authRepository: AuthRepository): CheckNicknameUseCase {
         return CheckNicknameUseCase(authRepository)
+    }
+
+    @Provides
+    fun provideUploadUserDataUseCase(authRepository: AuthRepository): UploadUserDataUseCase {
+        return UploadUserDataUseCase(authRepository)
     }
 }
 
