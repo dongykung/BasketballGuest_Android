@@ -47,7 +47,6 @@ fun DefaultButton(
                 text = title,
                 color = textColor,
                 style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold
             )
 
             AnimatedVisibility(loading) {
