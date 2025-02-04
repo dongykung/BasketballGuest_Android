@@ -1,16 +1,22 @@
 package com.dkproject.presentation.ui.screen.signUp
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -25,7 +31,12 @@ import com.dkproject.presentation.ui.theme.AppTheme
 fun UserBodyInfoScreen(
     onConfirmClick: () -> Unit = {},
     modifier: Modifier = Modifier,
-    heightValueChange: (Int) -> Unit = {}
+    height: Int?,
+    weight: Int?,
+    loading: Boolean,
+    heightValueChange: (Int) -> Unit = {},
+    weightValueChange: (Int) -> Unit = {},
+    onSkip: () -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
     Column(modifier = modifier) {
@@ -38,7 +49,8 @@ fun UserBodyInfoScreen(
             IntWheelPicker(
                 modifier = Modifier.fillMaxWidth(),
                 list = (140..210).toList(),
-                onValueChange = heightValueChange
+                onValueChange = heightValueChange,
+                currentValue = height ?: 175
             )
             Spacer(modifier = Modifier.height(18.dp))
             Text(
@@ -49,15 +61,23 @@ fun UserBodyInfoScreen(
             IntWheelPicker(
                 modifier = Modifier.fillMaxWidth(),
                 list = (50..120).toList(),
-                onValueChange = heightValueChange
+                onValueChange = weightValueChange,
+                currentValue = weight ?: 85
             )
         }
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(24.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(Icons.Outlined.Info, contentDescription = null)
+            Spacer(modifier = Modifier.width(6.dp))
+            Text(text = stringResource(R.string.skipexplain),
+                style = MaterialTheme.typography.labelMedium,
+                modifier = Modifier.padding(bottom = 6.dp))
+        }
         DefaultButton(
             title = stringResource(R.string.skip),
-            onClick = {},
+            onClick = onSkip,
             modifier = Modifier.fillMaxWidth(),
-            containerColor = MaterialTheme.colorScheme.inverseOnSurface
+            containerColor = MaterialTheme.colorScheme.inversePrimary,
         )
         Spacer(modifier = Modifier.height(8.dp))
         DefaultButton(
@@ -74,7 +94,10 @@ private fun UserBodyInfoScreenPreview() {
     AppTheme {
         UserBodyInfoScreen(
             onConfirmClick = {},
-            modifier = Modifier.fillMaxSize().padding(16.dp)
+            modifier = Modifier.fillMaxSize().padding(16.dp),
+            height = 175,
+            weight = 66,
+            loading = false
         )
     }
 }
