@@ -27,4 +27,12 @@
     <string name="height">height</string>
     <string name="next">next</string>
     <string name="skip">skip</string>
+    <string name="skipexplain">" If you skip, your information will be kept private."</string>
+    <string name="nicknamelengtherror">"Please set your nickname to at least 2 characters and no more than 8 characters. "</string>
+    <string name="failsignup">Membership registration failed. Please again.</string>
+    <string name="add">add</string>
+    <string name="guestpost">post(%d)</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+    <string name="leasttext">Please enter at least %d characters</string>
 </resources>

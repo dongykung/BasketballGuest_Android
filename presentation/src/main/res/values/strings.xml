@@ -28,5 +28,13 @@
     <string name="height">신장</string>
     <string name="next">다음</string>
     <string name="skip">건너뛰기</string>
+    <string name="skipexplain">건너뛰기 시 정보가 비공개 처리됩니다.</string>
+    <string name="nicknamelengtherror">닉네임은 2글자 이상, 8글자 이하로 설정해 주세요.</string>
+    <string name="failsignup">회원 가입에 실패했습니다 다시 시도해 주세요</string>
+    <string name="add">add</string>
+    <string name="guestpost">구인 작성(%d)</string>
+    <string name="title">제목</string>
+    <string name="description">상세 내용</string>
+    <string name="leasttext">최소 %d 글자 이상 입력해 주세요</string>
 
 </resources>
