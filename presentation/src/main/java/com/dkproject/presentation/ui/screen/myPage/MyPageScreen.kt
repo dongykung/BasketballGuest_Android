@@ -13,9 +13,9 @@ import com.dkproject.presentation.R
 import com.dkproject.presentation.ui.component.TextDialog
 
 @Composable
-fun MyPaceScreen(
+fun MyPageScreen(
     viewModel: MyPageViewModel = hiltViewModel(),
-    moveToLogin: () -> Unit,
+    moveToLogin: () -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
