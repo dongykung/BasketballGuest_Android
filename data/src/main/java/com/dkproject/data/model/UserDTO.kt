@@ -7,8 +7,8 @@ data class UserDTO(
     @DocumentId val id: String,
     val nickName: String,
     val position: List<String>,
-    val weight: Double?,
-    val height: Double?,
+    val weight: Int?,
+    val height: Int?,
     val profileImageUrl: String
 )
 
