@@ -1,5 +1,8 @@
 package com.dkproject.data.Repository
 
+import com.dkproject.data.model.UserDTO
+import com.dkproject.data.model.toDTO
+import com.dkproject.domain.model.User
 import com.dkproject.domain.repository.AuthRepository
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
@@ -24,5 +27,9 @@ class AuthRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             throw e
         }
+    }
+
+    override suspend fun uploadUserData(user: User): Result<Unit>  = kotlin.runCatching {
+        firestore.collection("User").document(user.id).set(user.toDTO())
     }
 }
