@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="splash">splash</string>
+    <string name="login">login</string>
+    <string name="signgoogle">"Sign in with Google "</string>
+    <string name="signkakao">Sign in with Kakao</string>
+    <string name="guest">Guest</string>
+    <string name="chat">Chat</string>
+    <string name="mypage">My</string>
+    <string name="googlenoaccount">There is no registered Google account.</string>
+    <string name="googleCancel">Failed Google login</string>
+    <string name="confirm">confirm</string>
+    <string name="cancel">cancel</string>
+    <string name="logout">log out</string>
+    <string name="logoutmessage">Are you sure you want to log out?</string>
+    <string name="kakaoCancel">Failed Kakao login</string>
+    <string name="nickname">Nickname</string>
+    <string name="bodyinfo">UserInfo</string>
+    <string name="userposition">UserPosition</string>
+    <string name="signupback">signupback</string>
+    <string name="failchecknickname">failed check nickname try again</string>
+    <string name="existnickname">already exist nickname</string>
+    <string name="inputnickname">Input Nickname</string>
+    <string name="selectposition">"Please select your preferred position "</string>
+    <string name="complete">Complete</string>
+    <string name="weight">weight</string>
+    <string name="height">height</string>
+    <string name="next">next</string>
+    <string name="skip">skip</string>
+</resources>

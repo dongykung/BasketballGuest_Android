@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="logoutmessage">정말 로그아웃 하시겠습니까?</string>
+    <string name="confirm">확인</string>
+    <string name="cancel">취소</string>
+    <string name="logout">로그아웃</string>
+    <string name="googleCancel">구글 로그인에 실패했습니다.</string>
+    <string name="googlenoaccount">기기에 구글 계정을 등록해 주세요.</string>
+    <string name="signkakao">카카오로 계속하기</string>
+    <string name="mypage">내 정보</string>
+    <string name="chat">채팅</string>
+    <string name="guest">게스트</string>
+    <string name="signgoogle">구글로 계속하기</string>
+    <string name="login">로그인</string>
+    <string name="splash">스플래쉬</string>
+    <string name="kakaoCancel">카카오 로그인에 실패했습니다.</string>
+
+    <string name="nickname">닉네임</string>
+    <string name="bodyinfo">신장 / 체중 정보</string>
+    <string name="userposition">포지션</string>
+    <string name="signupback">회원가입 뒤로가기</string>
+    <string name="failchecknickname">닉네임 체크에 실패했습니다 다시 시도해 주세요.</string>
+    <string name="existnickname">이미 존재하는 닉네임 입니다.</string>
+    <string name="inputnickname">닉네임을 입력해 주세요</string>
+    <string name="selectposition">선호하는 포지션을 골라주세요.</string>
+    <string name="complete">완료</string>
+    <string name="weight">체중</string>
+    <string name="height">신장</string>
+    <string name="next">다음</string>
+    <string name="skip">건너뛰기</string>
+
+</resources>
