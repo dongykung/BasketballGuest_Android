@@ -42,6 +42,7 @@ import kotlinx.coroutines.launch
 fun IntWheelPicker(
     modifier: Modifier = Modifier,
     pickerMaxHeight: Dp = 200.dp,
+    currentValue: Int,
     list: List<Int>,
     onValueChange: (Int) -> Unit = {}
 ) {
@@ -49,6 +50,14 @@ fun IntWheelPicker(
         initialFirstVisibleItemIndex = list.size / 2
     )
     val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(true) {
+        val targetIndex = list.indexOf(currentValue)
+        if (targetIndex != -1) {
+            lazyListState.animateScrollToItem(targetIndex)
+        }
+    }
+
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center
@@ -114,7 +123,6 @@ fun IntWheelPicker(
             .collect { currentIndex ->
                 if (currentIndex in list.indices) {
                     onValueChange(list[currentIndex])
-                    Log.d("IntWheelPicker", "onValueChange: ${list[currentIndex]}")
                 }
             }
     }
@@ -125,7 +133,8 @@ fun IntWheelPicker(
 private fun IntWheelPickerPreview() {
     AppTheme {
         IntWheelPicker(
-            list = (100..200).toList()
+            list = (100..200).toList(),
+            currentValue = 177
         )
     }
 }
