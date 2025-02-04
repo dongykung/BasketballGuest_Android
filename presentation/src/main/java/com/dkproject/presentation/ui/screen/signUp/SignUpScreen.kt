@@ -39,7 +39,11 @@ fun SignUpScreen(
     onBackClick: () -> Unit,
     onNextStep: () -> Unit,
     onNicknameChange: (String) -> Unit,
+    heightValueChange: (Int) -> Unit,
+    weightValueChange: (Int) -> Unit,
+    bodySkip: () -> Unit,
     positionTap: (Position) -> Unit,
+    moveToHome: () -> Unit
 ) {
     val progressValue by animateFloatAsState(targetValue = uiState.currentStep.progress, label = "")
 
@@ -48,6 +52,9 @@ fun SignUpScreen(
             when (event) {
                 is SignUpUiEvent.ShowSnackbar -> {
                     snackbarHostState.showSnackbar(event.message)
+                }
+                is SignUpUiEvent.MoveToHome -> {
+                    moveToHome()
                 }
             }
         }
@@ -74,6 +81,7 @@ fun SignUpScreen(
                 SignUpStep.Nickname -> {
                     NicknameScreen(
                         nickname = uiState.user.nickName,
+                        errorMessage = uiState.errorMessage,
                         loading = uiState.isLoading,
                         onNicknameChange = onNicknameChange,
                         onConfirmClick = onNextStep,
@@ -88,7 +96,13 @@ fun SignUpScreen(
                         onConfirmClick = onNextStep,
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(16.dp)
+                            .padding(16.dp),
+                        height = uiState.user.height,
+                        weight = uiState.user.weight,
+                        loading = uiState.isLoading,
+                        heightValueChange = heightValueChange,
+                        weightValueChange = weightValueChange,
+                        onSkip = bodySkip
                     )
                 }
 
@@ -98,7 +112,8 @@ fun SignUpScreen(
                         positionTap = positionTap,
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(16.dp)
+                            .padding(16.dp),
+                        onConfirmClick = onNextStep
                     )
                 }
             }
