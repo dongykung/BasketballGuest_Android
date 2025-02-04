@@ -78,7 +78,17 @@ fun NavGraphBuilder.authNavGraph(
             },
             onNextStep = { viewModel.nextStep() },
             onNicknameChange = { viewModel.updateNickName(it) },
-            positionTap = { viewModel.positionToggle(it) }
+            positionTap = { viewModel.positionToggle(it) },
+            heightValueChange = { viewModel.updateUserHeight(it) },
+            weightValueChange = { viewModel.updateUserWeight(it) },
+            bodySkip = { viewModel.skipUserInfo() },
+            moveToHome = {
+                navController.navigate(BottomNavItem.Guest.route) {
+                    popUpTo(Screen.SignUp) {
+                        inclusive = true
+                    }
+                }
+            }
         )
     }
 }
