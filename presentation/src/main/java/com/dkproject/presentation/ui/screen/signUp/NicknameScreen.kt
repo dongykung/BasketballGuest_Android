@@ -1,5 +1,6 @@
 package com.dkproject.presentation.ui.screen.signUp
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -23,6 +24,7 @@ import com.dkproject.presentation.ui.theme.AppTheme
 @Composable
 fun NicknameScreen(
     nickname: String,
+    errorMessage: String,
     loading: Boolean,
     onNicknameChange: (String) -> Unit,
     onConfirmClick: () -> Unit,
@@ -44,12 +46,17 @@ fun NicknameScreen(
             label = stringResource(R.string.nickname),
             modifier = Modifier.fillMaxWidth()
         )
+        AnimatedVisibility(errorMessage.isNotEmpty()) {
+            Text(text = errorMessage,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
         Spacer(modifier = Modifier.height(48.dp))
         DefaultButton(
             title = stringResource(R.string.next),
             loading = loading,
             onClick = onConfirmClick,
-            enabled = nickname.isNotEmpty(),
+            enabled = nickname.isNotEmpty() && errorMessage.isEmpty(),
             modifier = Modifier.fillMaxWidth()
         )
     }
@@ -61,6 +68,7 @@ private fun NicknameScreenPreview() {
     AppTheme {
         NicknameScreen(
             nickname = "df",
+            errorMessage = "",
             loading = false,
             onNicknameChange = {},
             onConfirmClick = {},
