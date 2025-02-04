@@ -30,9 +30,9 @@ val Typography = Typography(
     ),
     titleSmall = TextStyle(
         fontFamily = Pretendard,
-        fontWeight = FontWeight.Medium,
+        fontWeight = FontWeight.SemiBold,
         fontSize = 18.sp,
-        letterSpacing = 0.sp
+        letterSpacing = 0.5.sp
     ),
     headlineMedium = TextStyle(
         fontFamily = Pretendard,
@@ -44,6 +44,12 @@ val Typography = Typography(
         fontFamily = Pretendard,
         fontWeight = FontWeight.SemiBold,
         fontSize = 16.sp,
+        letterSpacing = 0.5.sp
+    ),
+    labelMedium = TextStyle(
+        fontFamily = Pretendard,
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp,
         letterSpacing = 0.5.sp
     )
 
