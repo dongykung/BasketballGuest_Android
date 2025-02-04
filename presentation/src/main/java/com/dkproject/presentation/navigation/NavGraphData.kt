@@ -20,6 +20,9 @@ sealed interface Screen {
 
     @Serializable
     data object SignUp: Screen
+
+    @Serializable
+    data object Post: Screen
 }
 
 @Serializable
