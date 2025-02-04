@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.dkproject.presentation.navigation.AppNavGraph
 import com.dkproject.presentation.ui.component.BottomNavigation
+import com.dkproject.presentation.ui.component.MyFloatingButton
 import com.dkproject.presentation.ui.theme.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -28,7 +29,8 @@ class MainActivity: ComponentActivity() {
                 val snackbarHostState = remember { SnackbarHostState() }
                 Scaffold(
                     bottomBar = { BottomNavigation(navController = navController) },
-                    snackbarHost = { SnackbarHost(snackbarHostState) }
+                    snackbarHost = { SnackbarHost(snackbarHostState) },
+                    floatingActionButton = { MyFloatingButton(navController = navController) }
                 ) { innerPadding ->
                     AppNavGraph(navController = navController,
                         modifier = Modifier.padding(innerPadding),
