@@ -7,21 +7,27 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dkproject.domain.model.User
 import com.dkproject.domain.usecase.auth.CheckNicknameUseCase
+import com.dkproject.domain.usecase.auth.UploadUserDataUseCase
 import com.dkproject.presentation.R
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     @ApplicationContext val context: Context,
-    private val checkNicknameUseCase: CheckNicknameUseCase
+    private val auth: FirebaseAuth,
+    private val checkNicknameUseCase: CheckNicknameUseCase,
+    private val uploadUserDataUseCase: UploadUserDataUseCase
 ): ViewModel() {
 
     private val _uiState = MutableStateFlow(SignUpViewState())
@@ -31,7 +37,8 @@ class SignUpViewModel @Inject constructor(
     val uiEvent = _uiEvent.asSharedFlow()
 
     init {
-        Log.d("SignUpViewModel", "init")
+        Log.d("SignUpViewModel", "${auth.currentUser?.uid}")
+        _uiState.update { it.copy(user = it.user.copy(id = auth.currentUser?.uid ?: "")) }
     }
 
     fun onBackClick() {
@@ -49,7 +56,7 @@ class SignUpViewModel @Inject constructor(
                 checkNickname(uiState.value.user.nickName)
             }
             SignUpStep.Position -> {
-
+                uploadUserData()
             }
             SignUpStep.UserInfo -> {
                 _uiState.update { it.copy(currentStep = SignUpStep.Position) }
@@ -58,8 +65,14 @@ class SignUpViewModel @Inject constructor(
     }
 
     fun updateNickName(nickName: String) {
-        _uiState.update {
-            it.copy(user = it.user.copy(nickName = nickName))
+        if(nickName.length > 8 || nickName.length < 2) {
+            _uiState.update {
+                it.copy(user = it.user.copy(nickName = nickName), errorMessage = context.getString(R.string.nicknamelengtherror))
+            }
+        } else {
+            _uiState.update {
+                it.copy(user = it.user.copy(nickName = nickName), errorMessage = "")
+            }
         }
     }
 
@@ -83,6 +96,18 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
+    fun updateUserHeight(height: Int) {
+        _uiState.update { it.copy(user = it.user.copy(height = height)) }
+    }
+
+    fun updateUserWeight(weight: Int) {
+        _uiState.update { it.copy(user = it.user.copy(weight = weight)) }
+    }
+
+    fun skipUserInfo() {
+        _uiState.update { it.copy(currentStep = SignUpStep.Position, user = it.user.copy(height = null, weight = null)) }
+    }
+
     fun positionToggle(position: Position) {
         val posStr = position.toString()
         val currentPositions = uiState.value.user.position
@@ -96,6 +121,24 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
+    private fun uploadUserData() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            val result = withContext(context = Dispatchers.IO) {
+                uploadUserDataUseCase(uiState.value.user)
+            }
+            result.fold(
+                onSuccess = {
+                    _uiEvent.emit(SignUpUiEvent.MoveToHome)
+                },
+                onFailure = {
+                    _uiEvent.emit(SignUpUiEvent.ShowSnackbar(context.getString(R.string.failsignup)))
+                    _uiState.update { it.copy(isLoading = false) }
+                }
+            )
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         Log.d("SignUpViewModel", "onCleared")
@@ -104,6 +147,7 @@ class SignUpViewModel @Inject constructor(
 
 sealed class SignUpUiEvent {
     data class ShowSnackbar(val message: String) : SignUpUiEvent()
+    data object MoveToHome: SignUpUiEvent()
 }
 
 sealed class SignUpStep(val title: Int, val progress: Float) {
@@ -115,5 +159,6 @@ sealed class SignUpStep(val title: Int, val progress: Float) {
 data class SignUpViewState (
     val currentStep: SignUpStep = SignUpStep.Nickname,
     val isLoading: Boolean = false,
-    val user: User = User()
+    val user: User = User(),
+    val errorMessage: String = ""
 )
