@@ -27,7 +27,7 @@ fun DefaultButton(
     onClick: () -> Unit,
     loading: Boolean = false,
     enabled: Boolean = true,
-    containerColor: Color = MaterialTheme.colorScheme.onSecondaryContainer,
+    containerColor: Color = MaterialTheme.colorScheme.secondaryContainer,
     textColor: Color = Color.Unspecified,
     modifier: Modifier = Modifier
 ) {
