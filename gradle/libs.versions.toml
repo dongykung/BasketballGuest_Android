@@ -11,6 +11,9 @@ activityCompose = "1.8.0"
 composeBom = "2024.04.01"
 material3 = "1.3.1"
 
+pagingRuntime = "3.3.5"
+pagingCommon = "3.3.5"
+pagingCompose = "3.3.5"
 playServicesAuth = "21.3.0"
 viewModel = "2.8.7"
 navigation = "2.8.6"
@@ -38,6 +41,11 @@ googleid = "1.1.1"
 [libraries]
 androidx-credentials = {module = "androidx.credentials:credentials", version.ref = "credentialsPlayServiceAuth"}
 androidx-credentials-play-service-auth = {module = "androidx.credentials:credentials-play-services-auth", version.ref = "credentialsPlayServiceAuth"}
+androidx-paging-runtime = { module = "androidx.paging:paging-runtime", version.ref = "pagingRuntime" }
+androidx-paging-common={group="androidx.paging",name="paging-common",version.ref="pagingCommon"}
+androidx-paging-compose = {group = "androidx.paging", name = "paging-compose", version.ref = "pagingCompose"}
+
+
 googleid = {module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "googleid"}
 
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
