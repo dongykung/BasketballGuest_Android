@@ -2,6 +2,7 @@ package com.dkproject.presentation.ui.screen.signUp
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,22 +14,18 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.dkproject.presentation.R
-import dagger.hilt.android.lifecycle.HiltViewModel
+import com.dkproject.presentation.model.Position
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.collect
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,7 +59,7 @@ fun SignUpScreen(
 
     Column(modifier = Modifier.fillMaxSize()) {
         CenterAlignedTopAppBar(
-            title = { Text(stringResource(uiState.currentStep.title)) },
+            title = { Text(stringResource(uiState.currentStep.title), style = MaterialTheme.typography.titleMedium) },
             navigationIcon = {
                 IconButton(onClick = onBackClick) {
                     Icon(
@@ -74,6 +71,7 @@ fun SignUpScreen(
         LinearProgressIndicator(
             modifier = Modifier.fillMaxWidth(),
             progress = { progressValue },
+            trackColor = MaterialTheme.colorScheme.onPrimary
         )
 
         AnimatedContent(targetState = uiState.currentStep, label = "") { step ->
