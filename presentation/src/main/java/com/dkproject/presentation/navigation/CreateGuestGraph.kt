@@ -16,6 +16,18 @@ fun NavGraphBuilder.createGuestGraph(
     snackbarHostState: SnackbarHostState,
 ) {
     composable<Screen.Post> {
-        GuestPostScreen()
+        GuestPostScreen(
+            onBackClick = {
+                navController.popBackStack()
+            },
+            onUpload = {
+                navController.navigate(BottomNavItem.Guest.route) {
+                    popUpTo(Screen.Post) {
+                        inclusive = true
+                    }
+                }
+            },
+            snackbarHostState = snackbarHostState
+        )
     }
 }
