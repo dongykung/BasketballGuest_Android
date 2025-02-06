@@ -89,6 +89,9 @@ dependencies {
     implementation("com.kakao.sdk:v2-user:2.20.6") // 카카오 로그인 API 모듈
     implementation("com.kakao.sdk:v2-share:2.20.6") // 카카오톡 공유 API 모듈
 
+    //paging
+    implementation (libs.androidx.paging.compose)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

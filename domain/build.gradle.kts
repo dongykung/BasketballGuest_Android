@@ -1,6 +1,8 @@
 plugins {
     id("java-library")
     alias(libs.plugins.jetbrains.kotlin.jvm)
+    alias(libs.plugins.kotlin.serialization)
+
 }
 
 java {
@@ -17,4 +19,7 @@ kotlin {
 dependencies{
     implementation(libs.kotlinx.coroutine)
     //paging3 - common(안드로이드 의존성 없음)
+    implementation(libs.androidx.paging.common)
+    implementation(libs.serialization.json)
+
 }
