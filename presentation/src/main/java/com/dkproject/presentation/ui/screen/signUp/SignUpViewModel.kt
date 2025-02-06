@@ -9,6 +9,7 @@ import com.dkproject.domain.model.User
 import com.dkproject.domain.usecase.auth.CheckNicknameUseCase
 import com.dkproject.domain.usecase.auth.UploadUserDataUseCase
 import com.dkproject.presentation.R
+import com.dkproject.presentation.model.Position
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -109,7 +110,7 @@ class SignUpViewModel @Inject constructor(
     }
 
     fun positionToggle(position: Position) {
-        val posStr = position.toString()
+        val posStr = position.toFirestoreValue()
         val currentPositions = uiState.value.user.position
         val updatedPositions = if (currentPositions.contains(posStr)) {
             currentPositions - posStr
