@@ -10,7 +10,7 @@ data class GuestPost(
     val lat: Double,
     val lng: Double,
     val memberCount: Int,
-    val parkFlag: String,
+    val parkFlag: Int,
     val placeAddress: String,
     val placeName: String,
     val positions: List<String>,
