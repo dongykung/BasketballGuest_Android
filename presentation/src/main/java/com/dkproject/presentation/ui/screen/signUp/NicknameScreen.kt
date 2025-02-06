@@ -18,7 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dkproject.presentation.R
 import com.dkproject.presentation.ui.component.button.DefaultButton
-import com.dkproject.presentation.ui.component.DefaultTextField
+import com.dkproject.presentation.ui.component.TextField.DefaultTextField
 import com.dkproject.presentation.ui.theme.AppTheme
 
 @Composable
@@ -43,6 +43,7 @@ fun NicknameScreen(
         DefaultTextField(
             value = nickname,
             onValueChange = onNicknameChange,
+            textStyle = MaterialTheme.typography.bodyMedium,
             label = stringResource(R.string.nickname),
             modifier = Modifier.fillMaxWidth()
         )
