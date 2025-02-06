@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="networkerror">"There is a problem with your network connection.\n Please check your internet status. "</string>
+    <string name="httperror">A problem has occurred with the server.\n Please contact the administrator.</string>
+    <string name="apierror">Invalid API key.\n Please contact the administrator.</string>
+</resources>

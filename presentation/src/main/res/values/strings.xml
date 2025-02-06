@@ -36,5 +36,33 @@
     <string name="title">제목</string>
     <string name="description">상세 내용</string>
     <string name="leasttext">최소 %d 글자 이상 입력해 주세요</string>
+    <string name="date">날짜</string>
+    <string name="starttime">시작시간</string>
+    <string name="endtime">종료시간</string>
+    <string name="am">오전</string>
+    <string name="pm">오후</string>
+    <string name="hour">%d시</string>
+    <string name="min">%d분</string>
+    <string name="close">닫기</string>
+    <string name="timeerror">시작 시간은 종료 시간보다 이전이어야 합니다</string>
+    <string name="recruitmentposition">모집 포지션을 선택해 주세요.</string>
+    <string name="point_guard">포인트 가드</string>
+    <string name="shooting_guard">슈팅 가드</string>
+    <string name="small_forward">스몰 포워드</string>
+    <string name="power_forward">파워 포워드</string>
+    <string name="center">센터</string>
+    <string name="positionnone">무관</string>
+    <string name="address">장소를 입력해 주세요</string>
+    <string name="searchplace">장소 검색</string>
+    <string name="searchplaceexplain">농구장을 검색해 주세요 \n 예시) 서울 농구장</string>
+    <string name="no_result">`%s`\n 에 대한 검색 결과가 없습니다.</string>
+    <string name="searchfail">검색에 실패했습니다.</string>
+    <string name="retry">재시도</string>
+    <string name="networkerror">네트워크 연결에 문제가 있습니다 인터넷 상태를 확인해주세요.</string>
+    <string name="postdescription">제목 및 설명</string>
+    <string name="postposition">모집 포지션</string>
+    <string name="postaddress">장소</string>
+    <string name="loselogin">로그인 정보를 잃었습니다. 재로그인 후 시도해 주세요.</string>
+    <string name="uploadfail">업로드에 실패했습니다. 잠시 후 다시 시도해 주세요.</string>
 
 </resources>
