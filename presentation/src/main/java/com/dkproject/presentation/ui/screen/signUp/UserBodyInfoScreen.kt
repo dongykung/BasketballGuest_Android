@@ -18,12 +18,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dkproject.presentation.R
-import com.dkproject.presentation.ui.component.IntWheelPicker
+import com.dkproject.presentation.ui.component.wheelpicker.IntWheelPicker
 import com.dkproject.presentation.ui.component.button.DefaultButton
 import com.dkproject.presentation.ui.theme.AppTheme
 
@@ -66,7 +65,7 @@ fun UserBodyInfoScreen(
             )
         }
         Spacer(modifier = Modifier.height(24.dp))
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(modifier = Modifier.padding(bottom = 8.dp),verticalAlignment = Alignment.CenterVertically) {
             Icon(Icons.Outlined.Info, contentDescription = null)
             Spacer(modifier = Modifier.width(6.dp))
             Text(text = stringResource(R.string.skipexplain),
@@ -77,7 +76,7 @@ fun UserBodyInfoScreen(
             title = stringResource(R.string.skip),
             onClick = onSkip,
             modifier = Modifier.fillMaxWidth(),
-            containerColor = MaterialTheme.colorScheme.inversePrimary,
+            containerColor = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Spacer(modifier = Modifier.height(8.dp))
         DefaultButton(
