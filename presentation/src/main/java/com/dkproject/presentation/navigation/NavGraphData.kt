@@ -11,18 +11,18 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.dkproject.presentation.R
 import kotlinx.serialization.Serializable
 
-sealed interface Screen {
+sealed class Screen {
     @Serializable
-    data object Splash : Screen
+    data object Splash : Screen()
 
     @Serializable
-    data object Login : Screen
+    data object Login : Screen()
 
     @Serializable
-    data object SignUp: Screen
+    data object SignUp: Screen()
 
     @Serializable
-    data object Post: Screen
+    data object Post: Screen()
 }
 
 @Serializable
