@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -20,7 +19,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dkproject.presentation.R
-import com.dkproject.presentation.ui.component.DefaultTextField
+import com.dkproject.presentation.ui.component.TextField.DefaultTextField
 import com.dkproject.presentation.ui.component.button.DefaultButton
 import com.dkproject.presentation.ui.theme.AppTheme
 
@@ -53,6 +52,7 @@ fun DescriptionScreen(
             onValueChange = titleChange,
             label = stringResource(R.string.title),
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+            textStyle = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.fillMaxWidth(),
         )
         AnimatedVisibility(titleErrorMessage.isNotEmpty()) {
@@ -71,9 +71,10 @@ fun DescriptionScreen(
         DefaultTextField(
             value = description,
             onValueChange = descriptionChange,
-            label = "",
+            label = stringResource(R.string.description),
             maxLines = 10,
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+            textStyle = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.fillMaxWidth()
                 .heightIn(min = 220.dp, max = 220.dp)
         )
