@@ -1,5 +1,6 @@
 package com.dkproject.presentation.ui.screen.signUp
 
+import androidx.annotation.StringRes
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,7 +25,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dkproject.presentation.R
+import com.dkproject.presentation.model.Position
 import com.dkproject.presentation.ui.component.button.DefaultButton
+import com.dkproject.presentation.ui.screen.GuestPost.GuestPostStep
 import com.dkproject.presentation.ui.theme.AppTheme
 
 @Composable
@@ -52,9 +55,9 @@ fun PositionScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(Position.entries.toTypedArray()) { position ->
+            items((Position.entries - Position.NONE).toTypedArray() ) { position ->
                 val animatedColor by animateColorAsState(
-                    targetValue = if (positions.contains(position.toString())) Color(0xFFFF8C00 ) else Color.Unspecified,
+                    targetValue = if (positions.contains(position.toFirestoreValue())) Color(0xFFFF8C00 ) else Color.Unspecified,
                     label = "",
                 )
                 Button(
@@ -64,7 +67,7 @@ fun PositionScreen(
                     )
                 ) {
                     Text(
-                        text = position.toString(), modifier = Modifier.padding(8.dp),
+                        text = stringResource(position.labelRes), modifier = Modifier.padding(8.dp),
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
@@ -81,14 +84,6 @@ fun PositionScreen(
             modifier = Modifier.fillMaxWidth()
         )
     }
-}
-
-enum class Position {
-    포인트가드,
-    슈팅가드,
-    스몰포워드,
-    파워포워드,
-    센터
 }
 
 @Composable
