@@ -12,7 +12,7 @@ data class GuestPostDTO(
     val lat: Double,
     val lng: Double,
     val memberCount: Int,
-    val parkFlag: String,
+    val parkFlag: Int,
     val placeAddress: String,
     val placeName: String,
     val positions: List<String>,
@@ -38,4 +38,23 @@ fun GuestPostDTO.toDomain(): GuestPost {
         title = title,
         writerUid = writerUid
     )
+}
+
+fun GuestPost.toDTO(): GuestPostDTO {
+    return GuestPostDTO(
+        id = id,
+        date = date,
+        description = description,
+        endDate = endDate,
+        lat = lat,
+        lng = lng,
+        memberCount = memberCount,
+        parkFlag = parkFlag,
+        placeAddress = placeAddress,
+        placeName = placeName,
+        positions = positions,
+        startDate = startDate,
+        title = title,
+        writerUid = writerUid
+        )
 }
