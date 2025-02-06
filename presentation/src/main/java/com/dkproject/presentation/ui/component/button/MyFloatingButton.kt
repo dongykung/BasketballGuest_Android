@@ -1,4 +1,4 @@
-package com.dkproject.presentation.ui.component
+package com.dkproject.presentation.ui.component.button
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -7,7 +7,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -36,7 +35,7 @@ fun MyFloatingButton(
         FloatingActionButton(
             onClick = onClick,
             shape = CircleShape,
-            containerColor = MaterialTheme.colorScheme.onSecondaryContainer
+            containerColor = MaterialTheme.colorScheme.secondaryContainer
         ) {
             Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add))
         }
