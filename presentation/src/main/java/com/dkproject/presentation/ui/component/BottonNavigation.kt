@@ -61,7 +61,7 @@ fun BottomNavigation(
                         )
                     },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                        selectedIconColor = MaterialTheme.colorScheme.secondaryContainer,
                         unselectedIconColor = Color.Gray,
                         indicatorColor = Color.Transparent
                     )
