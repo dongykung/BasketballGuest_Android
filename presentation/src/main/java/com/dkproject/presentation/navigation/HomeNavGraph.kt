@@ -7,27 +7,26 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.dkproject.presentation.ui.screen.Guest.GuestScreen
+import com.dkproject.presentation.ui.screen.Guest.GuestViewModel
 import com.dkproject.presentation.ui.screen.myPage.MyPageScreen
 
 @SuppressLint("ComposableDestinationInComposeScope")
-fun NavGraphBuilder.HomeNavGraph(navController: NavController,modifier: Modifier = Modifier) {
-
+fun NavGraphBuilder.HomeNavGraph(navController: NavController, modifier: Modifier = Modifier) {
 
     composable(BottomNavItem.Guest.route) {
-        Column(modifier = modifier.fillMaxSize()) {
-            Text(text = "tt")
-            Spacer(modifier = Modifier.weight(1f))
-            Text(
-                text = "test",
-                modifier = Modifier
-            )
-        }
+        val viewModel: GuestViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsState()
+        GuestScreen(uiState = uiState ,modifier = modifier)
     }
     composable(BottomNavItem.Chat.route) {
         Column(modifier = Modifier.fillMaxSize()) {
