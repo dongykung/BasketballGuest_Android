@@ -85,7 +85,8 @@ fun GuestPostScreen(
             LinearProgressIndicator(
                 modifier = Modifier.fillMaxWidth(),
                 progress = { progressValue },
-                trackColor = MaterialTheme.colorScheme.onPrimary
+                color = MaterialTheme.colorScheme.inverseSurface,
+                trackColor = MaterialTheme.colorScheme.onPrimary,
             )
 
             AnimatedContent(targetState = uiState.currentStep, label = "") { step ->
@@ -132,8 +133,9 @@ fun GuestPostScreen(
                             .padding(16.dp),
                         positions = uiState.guestPost.positions,
                         onPositionSelected = { viewModel.updatePosition(it) },
-                        onConfirmClick = { viewModel.updateCurrentStep(GuestPostStep.Address) }
-
+                        onConfirmClick = { viewModel.updateCurrentStep(GuestPostStep.Address) },
+                        memberCount = uiState.guestPost.memberCount,
+                        memberCountChange = { viewModel.updateMemberCount(it) }
                     )
                 }
             }

@@ -71,6 +71,7 @@ fun SignUpScreen(
         LinearProgressIndicator(
             modifier = Modifier.fillMaxWidth(),
             progress = { progressValue },
+            color = MaterialTheme.colorScheme.inverseSurface,
             trackColor = MaterialTheme.colorScheme.onPrimary
         )
 
