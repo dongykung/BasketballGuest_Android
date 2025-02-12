@@ -118,6 +118,10 @@ class GuestPostViewModel @Inject constructor(
         _uiState.update { it.copy(guestPost = it.guestPost.copy(positions = newPositions)) }
     }
 
+    fun updateMemberCount(count: Int) {
+        _uiState.update { it.copy(guestPost = it.guestPost.copy(memberCount = count)) }
+    }
+
     fun updateAddress(poi: Poi) {
         _uiState.update {
             it.copy(
