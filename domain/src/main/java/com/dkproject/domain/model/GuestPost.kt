@@ -9,6 +9,7 @@ data class GuestPost(
     val endDate: Date,
     val lat: Double,
     val lng: Double,
+    val currentMember: Int,
     val memberCount: Int,
     val parkFlag: Int,
     val placeAddress: String,
