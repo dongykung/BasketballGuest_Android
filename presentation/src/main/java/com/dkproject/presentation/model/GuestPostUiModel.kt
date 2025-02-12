@@ -38,3 +38,22 @@ fun GuestPostUiModel.toDomainModel(): GuestPost {
         writerUid = writerUid
     )
 }
+
+fun GuestPost.toUiModel(): GuestPostUiModel {
+    return GuestPostUiModel(
+        id = id,
+        date = date,
+        description = description,
+        endDate = endDate,
+        lat = lat,
+        lng = lng,
+        memberCount = memberCount,
+        parkFlag = parkFlag,
+        placeAddress = placeAddress,
+        placeName = placeName,
+        positions = positions,
+        startDate = startDate,
+        title = title,
+        writerUid = writerUid
+    )
+}
