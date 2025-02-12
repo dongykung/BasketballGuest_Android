@@ -18,12 +18,12 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.dkproject.presentation.R
 import com.dkproject.presentation.navigation.BottomNavItem
+import com.dkproject.presentation.navigation.Screen
 import com.dkproject.presentation.ui.theme.AppTheme
 
 @Composable
 fun MyFloatingButton(
     navController: NavController,
-    onClick:() -> Unit = {}
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -33,7 +33,9 @@ fun MyFloatingButton(
         exit = fadeOut()
     ) {
         FloatingActionButton(
-            onClick = onClick,
+            onClick = {
+                navController.navigate(Screen.Post)
+            },
             shape = CircleShape,
             containerColor = MaterialTheme.colorScheme.secondaryContainer
         ) {
@@ -46,6 +48,6 @@ fun MyFloatingButton(
 @Preview(showBackground = true)
 private fun MyFloatingButtonPreview() {
     AppTheme {
-        MyFloatingButton(navController = rememberNavController()) { }
+        MyFloatingButton(navController = rememberNavController())
     }
 }
