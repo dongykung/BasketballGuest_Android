@@ -12,6 +12,7 @@ data class GuestPostDTO(
     val endDate: Date,
     val lat: Double,
     val lng: Double,
+    val currentMember: Int = 0,
     val memberCount: Int,
     val parkFlag: Int,
     val placeAddress: String,
@@ -21,7 +22,7 @@ data class GuestPostDTO(
     val title: String,
     val writerUid: String
 ) {
-    constructor() : this("", Date(), "", Date(), 0.0, 0.0, 0, 0, "", "", emptyList(), Date(), "", "")
+    constructor() : this("", Date(), "", Date(), 0.0, 0.0, 0, 0,0, "", "", emptyList(), Date(), "", "")
 }
 
 fun GuestPostDTO.toDomain(): GuestPost {
@@ -32,6 +33,7 @@ fun GuestPostDTO.toDomain(): GuestPost {
         endDate = endDate,
         lat = lat,
         lng = lng,
+        currentMember = currentMember,
         memberCount = memberCount,
         parkFlag = parkFlag,
         placeAddress = placeAddress,
@@ -51,6 +53,7 @@ fun GuestPost.toDTO(): GuestPostDTO {
         endDate = endDate,
         lat = lat,
         lng = lng,
+        currentMember = currentMember,
         memberCount = memberCount,
         parkFlag = parkFlag,
         placeAddress = placeAddress,
