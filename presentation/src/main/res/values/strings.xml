@@ -64,5 +64,9 @@
     <string name="postaddress">장소</string>
     <string name="loselogin">로그인 정보를 잃었습니다. 재로그인 후 시도해 주세요.</string>
     <string name="uploadfail">업로드에 실패했습니다. 잠시 후 다시 시도해 주세요.</string>
+    <string name="emptyguest">아직 등록된 게스트 구인 정보가 없습니다.\n첫 게시글을 작성해보세요!</string>
+    <string name="nearby">내 주변</string>
+    <string name="filterposition">%s외 %d</string>
+    <string name="lookingforguest">게스트 구인</string>
 
 </resources>

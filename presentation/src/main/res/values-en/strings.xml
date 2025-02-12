@@ -16,7 +16,7 @@
     <string name="kakaoCancel">Failed Kakao login</string>
     <string name="nickname">Nickname</string>
     <string name="bodyinfo">UserInfo</string>
-    <string name="userposition">UserPosition</string>
+    <string name="userposition">Position</string>
     <string name="signupback">signupback</string>
     <string name="failchecknickname">failed check nickname try again</string>
     <string name="existnickname">already exist nickname</string>
@@ -63,4 +63,8 @@
     <string name="postaddress">Address</string>
     <string name="loselogin">Lost my login information. Please log in again and try again.</string>
     <string name="uploadfail">Upload failed. Please try again later.</string>
+    <string name="emptyguest">" There are no guest job openings registered yet.\nWrite your first post!"</string>
+    <string name="nearby">" Around Me"</string>
+    <string name="filterposition">%s and %dothers</string>
+    <string name="lookingforguest">"Looking for a guest "</string>
 </resources>
