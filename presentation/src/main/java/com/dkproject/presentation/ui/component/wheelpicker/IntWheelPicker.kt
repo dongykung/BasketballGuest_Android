@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -86,7 +87,7 @@ fun IntWheelPicker(
                     targetValue = if (isSelected) 1.5f else 1.0f, label = ""
                 )
                 val animatedColor by animateColorAsState(
-                    targetValue = if (isSelected) Color.Unspecified else Color.Gray, label = ""
+                    targetValue = if (isSelected) Color.Black else Color.Gray, label = ""
                 )
                 Box(
                     contentAlignment = Alignment.Center,
