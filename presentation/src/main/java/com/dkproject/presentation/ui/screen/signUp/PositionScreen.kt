@@ -57,7 +57,7 @@ fun PositionScreen(
         ) {
             items((Position.entries - Position.NONE).toTypedArray() ) { position ->
                 val animatedColor by animateColorAsState(
-                    targetValue = if (positions.contains(position.toFirestoreValue())) Color(0xFFFF8C00 ) else Color.Unspecified,
+                    targetValue = if (positions.contains(position.toFirestoreValue())) Color(0xFFFF8C00 ) else MaterialTheme.colorScheme.inverseSurface,
                     label = "",
                 )
                 Button(
