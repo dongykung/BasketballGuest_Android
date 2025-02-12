@@ -1,5 +1,6 @@
 package com.dkproject.presentation.ui.screen.searchAddress
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -61,6 +62,11 @@ class SearchAddressViewModel @Inject constructor(
 
     fun performSearch() {
         _searchTrigger.value += 1
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        Log.d(TAG, "onCleared: ")
     }
 
 }
