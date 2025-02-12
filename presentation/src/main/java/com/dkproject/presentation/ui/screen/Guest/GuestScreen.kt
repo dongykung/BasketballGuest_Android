@@ -1,5 +1,6 @@
 package com.dkproject.presentation.ui.screen.Guest
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -13,17 +14,28 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ChipColors
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SuggestionChip
+import androidx.compose.material3.SuggestionChipDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.dkproject.presentation.extension.startTimeWithEndTime
@@ -51,6 +63,7 @@ fun GuestScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 2.dp)
+                .padding(start = 8.dp)
         )
         when (val refreshState = postLists.loadState.refresh) {
             is LoadState.Error -> {
@@ -106,16 +119,16 @@ fun GuestListItem(
     guestPostUiModel: GuestPostUiModel,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
-        Column(modifier = Modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Card(modifier = modifier,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
+        Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(
                 text = guestPostUiModel.title,
                 style = MaterialTheme.typography.titleLarge
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.DateRange, null, tint = MaterialTheme.colorScheme.primary)
                 Text(
-                    modifier = Modifier.padding(start = 8.dp),
+                    modifier = Modifier,
                     text = guestPostUiModel.date.toFormattedHomeGuestListString(),
                     style = MaterialTheme.typography.bodySmall
                 )
@@ -127,24 +140,41 @@ fun GuestListItem(
                     ), style = MaterialTheme.typography.bodySmall
                 )
             }
-            Text(text = guestPostUiModel.placeName)
+            Text(text = guestPostUiModel.placeName, style = MaterialTheme.typography.titleSmall)
 
-            Text(text = guestPostUiModel.placeAddress)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    Icons.Default.LocationOn, null,
+                    tint = Color.Gray
+                )
+                Text(
+                    text = guestPostUiModel.placeAddress,
+                    modifier = Modifier.padding(start = 8.dp),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray
+                )
+            }
 
-            FlowRow {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 guestPostUiModel.positions.forEach { position ->
                     val positionInt = Position.fromFirestoreValue(value = position)
-                    SuggestionChip(
-                        modifier = Modifier.padding(end = 8.dp),
-                        onClick = {},
-                        enabled = false,
-                        shape = RoundedCornerShape(16.dp),
-                        label = { Text(text = stringResource(positionInt.labelRes)) })
+                    Surface(shape = RoundedCornerShape(12.dp),
+                        border = BorderStroke(1.dp, Color.LightGray)) {
+                        Text(
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+                            text = stringResource(positionInt.labelRes),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.secondaryContainer,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
         }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable
