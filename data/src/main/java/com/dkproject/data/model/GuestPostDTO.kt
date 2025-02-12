@@ -2,6 +2,7 @@ package com.dkproject.data.model
 
 import com.dkproject.domain.model.GuestPost
 import com.google.firebase.firestore.DocumentId
+import kotlinx.serialization.Serializable
 import java.util.Date
 
 data class GuestPostDTO(
@@ -19,7 +20,9 @@ data class GuestPostDTO(
     val startDate: Date,
     val title: String,
     val writerUid: String
-)
+) {
+    constructor() : this("", Date(), "", Date(), 0.0, 0.0, 0, 0, "", "", emptyList(), Date(), "", "")
+}
 
 fun GuestPostDTO.toDomain(): GuestPost {
     return GuestPost(
