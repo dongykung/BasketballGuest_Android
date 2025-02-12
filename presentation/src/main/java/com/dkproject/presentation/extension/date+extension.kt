@@ -10,6 +10,16 @@ fun Date.toFormattedfullString(): String {
     return formatter.format(this)
 }
 
+fun Date.toFormattedHomeGuestListString(): String {
+    val formatter = SimpleDateFormat("yyyy.MM.dd", Locale.getDefault())
+    return formatter.format(this)
+}
+
+fun Date.toFormattedFilterDate(): String {
+    val formatter = SimpleDateFormat("MM.dd", Locale.getDefault())
+    return formatter.format(this)
+}
+
 fun Date.toFormattedHourAndMinute(): String {
     val formatter = SimpleDateFormat("a h시 mm분", Locale.getDefault())
     return formatter.format(this)
@@ -34,4 +44,10 @@ fun Date.combineWithTimeFrom(timeSource: Date): Date {
     baseCal.set(Calendar.MONTH, timeCal.get(Calendar.MONTH))
     baseCal.set(Calendar.DAY_OF_MONTH, timeCal.get(Calendar.DAY_OF_MONTH))
     return baseCal.time
+}
+
+fun startTimeWithEndTime(startTime: Date, endTime: Date): String {
+    val formatter = SimpleDateFormat("a h:mm", Locale.getDefault())
+    val formatter2 = SimpleDateFormat("h:mm", Locale.getDefault())
+    return formatter.format(startTime) + " ~ " + formatter2.format(endTime)
 }
