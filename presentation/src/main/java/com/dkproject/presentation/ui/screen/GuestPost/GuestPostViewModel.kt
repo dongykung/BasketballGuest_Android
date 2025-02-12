@@ -181,7 +181,7 @@ sealed class GuestPostStep(@StringRes val step: Int, val progress: Float) {
 }
 
 data class GuestPostState(
-    val currentStep: GuestPostStep = GuestPostStep.Address,
+    val currentStep: GuestPostStep = GuestPostStep.Description,
     val guestPost: GuestPostUiModel = GuestPostUiModel(date = Date().withTime(0, 0, 0, 0)),
     val isLoading: Boolean = false,
     val titleErrorMessage: String = "",
