@@ -1,4 +1,5 @@
 [versions]
+accompanistPermissions = "0.36.0"
 agp = "8.7.3"
 firebaseBom = "33.8.0"
 kotlin = "2.0.21"
@@ -15,6 +16,7 @@ pagingRuntime = "3.3.5"
 pagingCommon = "3.3.5"
 pagingCompose = "3.3.5"
 playServicesAuth = "21.3.0"
+playServicesLocation = "21.3.0"
 viewModel = "2.8.7"
 navigation = "2.8.6"
 serialization-json = "1.7.3"
@@ -39,6 +41,7 @@ googleid = "1.1.1"
 
 
 [libraries]
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 androidx-credentials = {module = "androidx.credentials:credentials", version.ref = "credentialsPlayServiceAuth"}
 androidx-credentials-play-service-auth = {module = "androidx.credentials:credentials-play-services-auth", version.ref = "credentialsPlayServiceAuth"}
 androidx-paging-runtime = { module = "androidx.paging:paging-runtime", version.ref = "pagingRuntime" }
@@ -71,6 +74,7 @@ androidx-viewmodel = {group = "androidx.lifecycle", name = "lifecycle-viewmodel-
 androidx-navigation = {group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation"}
 androidx-navigation-test = {group = "androidx.navigation", name = "navigation-testing", version.ref = "navigation"}
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
+play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
 serialization-json = {group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization-json"}
 
 kotlinx-coroutine = {group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutine"}
