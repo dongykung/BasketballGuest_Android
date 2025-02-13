@@ -68,5 +68,9 @@
     <string name="nearby">내 주변</string>
     <string name="filterposition">%s외 %d</string>
     <string name="lookingforguest">게스트 구인</string>
+    <string name="memberCount">모집 인원 수를 정해 주세요.</string>
+    <string name="addresspermission">위치 권한이 필요합니다.</string>
+    <string name="setting">설정하기</string>
+    <string name="failgps">위치 정보를 가져오는데 실패했습니다.</string>
 
 </resources>

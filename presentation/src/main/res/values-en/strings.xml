@@ -67,4 +67,8 @@
     <string name="nearby">" Around Me"</string>
     <string name="filterposition">%s and %dothers</string>
     <string name="lookingforguest">"Looking for a guest "</string>
+    <string name="memberCount">"Please specify the number of people to recruit "</string>
+    <string name="addresspermission">"Location permission is required. "</string>
+    <string name="setting">Setting</string>
+    <string name="failgps">"Failed to retrieve location information. "</string>
 </resources>
