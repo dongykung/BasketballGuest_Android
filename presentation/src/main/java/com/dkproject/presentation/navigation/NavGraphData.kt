@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.SportsBaseball
 import androidx.compose.material.icons.outlined.SportsBaseball
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.dkproject.presentation.R
+import com.dkproject.presentation.model.GuestPostUiModel
 import kotlinx.serialization.Serializable
 
 sealed class Screen {
@@ -23,6 +24,9 @@ sealed class Screen {
 
     @Serializable
     data object Post: Screen()
+
+    @Serializable
+    data class GuestDetail(val post: GuestPostUiModel): Screen()
 }
 
 @Serializable
