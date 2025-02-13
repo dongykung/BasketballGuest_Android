@@ -8,6 +8,7 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import com.dkproject.domain.model.GuestFilter
 import com.dkproject.domain.usecase.Guest.GetGuestPostListUseCase
+import com.dkproject.presentation.model.GuestFilterUiModel
 import com.dkproject.presentation.model.GuestPostUiModel
 import com.dkproject.presentation.model.toUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,8 +38,8 @@ class GuestViewModel @Inject constructor(
         getGuestList()
     }
 
-    fun getGuestList() {
-        val guestListFlow = buildGuestListFlow(uiState.value.guestFilter)
+    private fun getGuestList() {
+        val guestListFlow = buildGuestListFlow(uiState.value.guestFilter.toDomain())
         _uiState.update { currentState ->
             currentState.copy(guestList = guestListFlow)
         }
@@ -51,6 +52,13 @@ class GuestViewModel @Inject constructor(
             .cachedIn(viewModelScope)
     }
 
+    fun updateGuestFilter(guestFilter: GuestFilterUiModel) {
+        _uiState.update { it.copy(
+            guestFilter = guestFilter,
+            guestList = buildGuestListFlow(guestFilter.toDomain())
+        ) }
+    }
+
     override fun onCleared() {
         super.onCleared()
         Log.d(TAG, "onCleared: ")
@@ -59,7 +67,7 @@ class GuestViewModel @Inject constructor(
 
 data class GuestListUiState(
     val guestList: Flow<PagingData<GuestPostUiModel>> = emptyFlow(),
-    val guestFilter: GuestFilter = GuestFilter(selectedDate = null),
+    val guestFilter: GuestFilterUiModel = GuestFilterUiModel(selectedDate = null),
 )
 
 sealed class GuestUiEvent {
