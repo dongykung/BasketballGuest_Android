@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -21,18 +22,28 @@ import com.dkproject.presentation.ui.screen.Guest.GuestViewModel
 import com.dkproject.presentation.ui.screen.myPage.MyPageScreen
 
 @SuppressLint("ComposableDestinationInComposeScope")
-fun NavGraphBuilder.HomeNavGraph(navController: NavController, modifier: Modifier = Modifier) {
+fun NavGraphBuilder.homeNavGraph(
+    navController: NavController, snackbarHostState: SnackbarHostState,
+    modifier: Modifier = Modifier
+) {
 
     composable(BottomNavItem.Guest.route) {
         val viewModel: GuestViewModel = hiltViewModel()
         val uiState by viewModel.uiState.collectAsState()
-        GuestScreen(uiState = uiState ,modifier = modifier)
+        GuestScreen(
+            uiState = uiState,
+            updateGuestFilter = viewModel::updateGuestFilter,
+            snackbarHostState = snackbarHostState,
+            modifier = modifier
+        )
     }
     composable(BottomNavItem.Chat.route) {
         Column(modifier = Modifier.fillMaxSize()) {
-            Text(text = "chat", modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Gray))
+            Text(
+                text = "chat", modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Gray)
+            )
         }
     }
     composable(BottomNavItem.Profile.route) {
