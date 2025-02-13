@@ -62,12 +62,13 @@ class GuestPagingSource @Inject constructor(
 
     private fun buildQuery(filter: GuestFilter, lastDocument: DocumentSnapshot?): Query {
         var query: Query = firestore.collection("Guest")
-            .orderBy("startDate", Query.Direction.DESCENDING)
+            .orderBy("startDate", Query.Direction.ASCENDING)
             .limit(filter.limit.toLong())
 
         if(filter.isNearBy) {
             filter.myLocation?.let { location ->
-                val bounds = calculateCoordinateBounds(location, 10.0)
+                Log.d("GuestPaging", "${location.latitude}, ${location.longitude}")
+                val bounds = calculateCoordinateBounds(location, filter.radiusInMeters)
                 query = query
                     .whereGreaterThanOrEqualTo("lng", bounds.minLongitude)
                     .whereLessThanOrEqualTo("lng", bounds.maxLongitude)
@@ -83,7 +84,7 @@ class GuestPagingSource @Inject constructor(
         }
 
         if(filter.selectedPosition.isNotEmpty()) {
-            query = query.whereArrayContains("positions", filter.selectedPosition)
+            query = query.whereArrayContainsAny("positions", filter.selectedPosition + "무관")
         }
 
         if(lastDocument != null) {
