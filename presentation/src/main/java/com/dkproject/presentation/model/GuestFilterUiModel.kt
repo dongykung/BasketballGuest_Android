@@ -8,7 +8,7 @@ data class GuestFilterUiModel(
     var isNearBy: Boolean = false,
     var myLocation: Coordinate? = null,
     var radiusInMeters: Double = 10000.0, // 10km
-    var selectedDate: Date?,
+    var selectedDate: Date? = null,
     var selectedPosition: List<Position> = emptyList(),
     var limit: Int = 10
 ) {
