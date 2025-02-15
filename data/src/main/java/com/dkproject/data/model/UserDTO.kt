@@ -10,17 +10,17 @@ data class UserDTO(
     val weight: Int?,
     val height: Int?,
     val profileImageUrl: String
-)
-
-fun UserDTO.toDomain(): User {
-    return User(
-        id = id,
-        nickName = nickName,
-        position = position,
-        weight = weight,
-        height = height,
-        profileImageUrl = profileImageUrl
-    )
+) {
+    fun toDomain(): User {
+        return User(
+            id = id,
+            nickName = nickName,
+            position = position,
+            weight = weight,
+            height = height,
+            profileImageUrl = profileImageUrl
+        )
+    }
 }
 
 fun User.toDTO(): UserDTO {
