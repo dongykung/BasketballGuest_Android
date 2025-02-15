@@ -2,9 +2,11 @@ package com.dkproject.data.Repository
 
 import com.dkproject.data.model.UserDTO
 import com.dkproject.data.model.toDTO
+import com.dkproject.data.model.toDomain
 import com.dkproject.domain.model.User
 import com.dkproject.domain.repository.AuthRepository
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -31,5 +33,15 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun uploadUserData(user: User): Result<Unit>  = kotlin.runCatching {
         firestore.collection("User").document(user.id).set(user.toDTO())
+    }
+
+    override suspend fun getUserData(userUid: String): User {
+        try {
+            val snapshot = firestore.collection("User").document(userUid).get().await()
+            val userDTO = snapshot.toObject(UserDTO::class.java) ?: throw Exception("User data not found")
+            return userDTO.toDomain()
+        } catch (e: Exception) {
+            throw e
+        }
     }
 }
