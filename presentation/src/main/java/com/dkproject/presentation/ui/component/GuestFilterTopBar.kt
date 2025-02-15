@@ -1,10 +1,16 @@
 package com.dkproject.presentation.ui.component
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -27,8 +33,10 @@ fun GuestFilterTopBar(
     guestFilter: GuestFilterUiModel,
     onNearByClick: () -> Unit = {},
     onDateClick: () -> Unit = {},
-    onPositionClick: () -> Unit = {}
+    onPositionClick: () -> Unit = {},
+    onReset: () -> Unit = {}
 ) {
+    val isReset = guestFilter.selectedDate != null || guestFilter.isNearBy || guestFilter.selectedPosition.isNotEmpty()
     val positionText = when {
         guestFilter.selectedPosition.isEmpty() ->
             stringResource(R.string.userposition)
@@ -56,6 +64,11 @@ fun GuestFilterTopBar(
             Text(
                 text = positionText
             )
+        }
+        AnimatedVisibility(isReset) {
+            IconButton(onClick = onReset) {
+                Icon(Icons.Default.Refresh, contentDescription = null)
+            }
         }
     }
 }
