@@ -59,6 +59,11 @@ class GuestViewModel @Inject constructor(
         ) }
     }
 
+    fun refreshGuestList() {
+        _uiState.update { it.copy(guestList = buildGuestListFlow(uiState.value.guestFilter.toDomain()), isLoading = true) }
+        _uiState.update { it.copy(isLoading =  false) }
+    }
+
     override fun onCleared() {
         super.onCleared()
         Log.d(TAG, "onCleared: ")
@@ -68,6 +73,7 @@ class GuestViewModel @Inject constructor(
 data class GuestListUiState(
     val guestList: Flow<PagingData<GuestPostUiModel>> = emptyFlow(),
     val guestFilter: GuestFilterUiModel = GuestFilterUiModel(selectedDate = null),
+    val isLoading: Boolean = false
 )
 
 sealed class GuestUiEvent {

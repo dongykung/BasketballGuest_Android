@@ -43,6 +43,7 @@ import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -97,6 +98,8 @@ import java.util.Date
 fun GuestScreen(
     uiState: GuestListUiState,
     updateGuestFilter: (GuestFilterUiModel) -> Unit,
+    onRefresh: () -> Unit,
+    onFilterReset: (GuestFilterUiModel) -> Unit,
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
@@ -142,7 +145,6 @@ fun GuestScreen(
                                     isNearBy = !currentNearBy,
                                     myLocation = coordinate
                                 )
-                                Log.d("myLocation", "${location.latitude} , ${location.longitude}")
                                 updateGuestFilter(newFilter)
                             } catch (e: Exception) {
                                 snackbarHostState.showSnackbar(e.message ?: "오류 발생")
@@ -152,12 +154,15 @@ fun GuestScreen(
                 )
             },
             onDateClick = { isDateFilter = true },
-            onPositionClick = { isPositionFilter = true }
+            onPositionClick = { isPositionFilter = true },
+            onReset = {onFilterReset(GuestFilterUiModel())}
         )
         GuestPostsContent(
             postLists = postLists,
             modifier = Modifier.fillMaxSize(),
-            onRetry = { postLists.retry() }
+            onRetry = { postLists.retry() },
+            isRefreshing = uiState.isLoading,
+            onRefresh = onRefresh
         )
     }
     if (isDateFilter) {
@@ -186,7 +191,7 @@ fun GuestScreen(
     }
 }
 
-@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalPermissionsApi::class)
 private fun handleLocationPermission(
     context: Context,
     locationPermissionState: PermissionState,
@@ -218,15 +223,17 @@ private fun handleLocationPermission(
                 }
             }
         }
-
         PermissionStatus.Granted -> onPermissionGranted()
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GuestPostsContent(
     postLists: LazyPagingItems<GuestPostUiModel>,
     modifier: Modifier = Modifier,
+    isRefreshing: Boolean,
+    onRefresh: () -> Unit,
     onRetry: () -> Unit
 ) {
     when (val refreshState = postLists.loadState.refresh) {
@@ -246,31 +253,36 @@ fun GuestPostsContent(
             if (postLists.itemCount == 0) {
                 EmptyGuestScreen(modifier = Modifier.fillMaxSize())
             } else {
-                LazyColumn(modifier = modifier) {
-                    items(postLists.itemCount) { index ->
-                        postLists[index]?.let { guestPost ->
-                            GuestListItem(
-                                guestPostUiModel = guestPost,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 12.dp, vertical = 8.dp)
-                            )
-                        }
-                    }
-                    item {
-                        when (postLists.loadState.append) {
-                            is LoadState.Error -> {
-                                FooterErrorScreen(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    retryAction = onRetry
+                PullToRefreshBox(
+                    isRefreshing = isRefreshing,
+                    onRefresh = onRefresh
+                ) {
+                    LazyColumn(modifier = modifier) {
+                        items(postLists.itemCount) { index ->
+                            postLists[index]?.let { guestPost ->
+                                GuestListItem(
+                                    guestPostUiModel = guestPost,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 12.dp, vertical = 8.dp)
                                 )
                             }
+                        }
+                        item {
+                            when (postLists.loadState.append) {
+                                is LoadState.Error -> {
+                                    FooterErrorScreen(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        retryAction = onRetry
+                                    )
+                                }
 
-                            is LoadState.Loading -> {
-                                LoadingScreen(modifier = Modifier.fillMaxWidth())
+                                is LoadState.Loading -> {
+                                    LoadingScreen(modifier = Modifier.fillMaxWidth())
+                                }
+
+                                else -> Unit
                             }
-
-                            else -> Unit
                         }
                     }
                 }
