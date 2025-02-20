@@ -19,5 +19,4 @@ object DateSerializer: KSerializer<Date> {
     override fun serialize(encoder: Encoder, value: Date) {
         encoder.encodeLong(value.time)
     }
-
 }
