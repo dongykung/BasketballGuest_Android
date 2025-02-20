@@ -15,7 +15,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        minSdk = 24
+        minSdk = 28
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -78,12 +78,22 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.messaging)
+    implementation(libs.google.firebase.analytics)
+
+
+    //gms
     implementation(libs.play.services.auth)
+    implementation(libs.play.services.location)
 
     //google
     implementation(libs.googleid)
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.service.auth)
+
+    //permission
+    implementation(libs.accompanist.permissions)
 
     //kakao
     implementation("com.kakao.sdk:v2-user:2.20.6") // 카카오 로그인 API 모듈
@@ -91,6 +101,12 @@ dependencies {
 
     //paging
     implementation (libs.androidx.paging.compose)
+
+    //naverMap
+    implementation (libs.navermap.compose)
+
+    //coil
+    implementation(libs.coil)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

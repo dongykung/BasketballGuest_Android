@@ -15,7 +15,7 @@ android {
 
     defaultConfig {
         applicationId = "com.dkproject.basketballguest_android"
-        minSdk = 24
+        minSdk = 28
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -24,7 +24,7 @@ android {
         buildConfigField(type = "String", name = "GOOGLE_LOGIN", value = getApiKey("GOOGLE_LOGIN"))
         buildConfigField(type = "String", name = "kakao_native_app_key", value = getApiKey("kakao_native_app_key"))
         resValue("string","kakao_oauth_host",getApiKey("kakao_oauth_host"))
-
+        buildConfigField(type = "String", name = "NAVER_MAP_CLIENT_ID", value = getApiKey("NAVER_MAP_CLIENT_ID"))
     }
 
     buildTypes {
@@ -82,6 +82,10 @@ dependencies {
 
     //kakao
     implementation("com.kakao.sdk:v2-user:2.20.6") // 카카오 로그인 API 모듈
+
+    //navermap
+    implementation (libs.navermap.compose)
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

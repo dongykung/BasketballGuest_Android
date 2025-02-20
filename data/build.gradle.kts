@@ -13,7 +13,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        minSdk = 24
+        minSdk = 28
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -59,6 +59,9 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.firestore)
+    implementation(libs.firebase.messaging)
+    implementation(libs.google.firebase.analytics)
+    implementation(libs.firebase.auth)
 
     //serialization
     implementation(libs.serialization.json)
