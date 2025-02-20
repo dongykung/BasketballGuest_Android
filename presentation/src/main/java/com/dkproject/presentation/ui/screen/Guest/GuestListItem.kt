@@ -1,6 +1,9 @@
 package com.dkproject.presentation.ui.screen.Guest
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -21,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -30,6 +34,7 @@ import com.dkproject.presentation.extension.startTimeWithEndTime
 import com.dkproject.presentation.extension.toFormattedHomeGuestListString
 import com.dkproject.presentation.model.GuestPostUiModel
 import com.dkproject.presentation.model.Position
+import com.dkproject.presentation.ui.component.PositionChip
 
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -68,18 +73,12 @@ fun GuestListItem(
             }
             Text(text = guestPostUiModel.placeName, style = MaterialTheme.typography.titleSmall)
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    Icons.Default.LocationOn, null,
-                    tint = Color.Gray
+            Text(
+                text = guestPostUiModel.placeAddress,
+                modifier = Modifier,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray
                 )
-                Text(
-                    text = guestPostUiModel.placeAddress,
-                    modifier = Modifier.padding(start = 8.dp),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray
-                )
-            }
 
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -87,18 +86,7 @@ fun GuestListItem(
             ) {
                 guestPostUiModel.positions.forEach { position ->
                     val positionInt = Position.fromFirestoreValue(value = position)
-                    Surface(
-                        shape = RoundedCornerShape(12.dp),
-                        border = BorderStroke(1.dp, Color.LightGray)
-                    ) {
-                        Text(
-                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
-                            text = stringResource(positionInt.labelRes),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.secondaryContainer,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
+                    PositionChip(positionInt = positionInt.labelRes)
                 }
             }
         }
