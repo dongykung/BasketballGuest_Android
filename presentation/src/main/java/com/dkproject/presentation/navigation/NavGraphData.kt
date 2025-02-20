@@ -13,6 +13,9 @@ import com.dkproject.presentation.model.GuestPostUiModel
 import kotlinx.serialization.Serializable
 
 sealed class Screen {
+    open val route: String
+        get() = this::class.simpleName ?: "unknown"
+
     @Serializable
     data object Splash : Screen()
 
@@ -26,7 +29,7 @@ sealed class Screen {
     data object Post: Screen()
 
     @Serializable
-    data class GuestDetail(val post: GuestPostUiModel): Screen()
+    data class GuestDetail(val post: String): Screen()
 }
 
 @Serializable
