@@ -22,5 +22,5 @@ fun fromFirestoreValue(value: String): UserStatus {
 }
 
 data class UserPostStatus(
-    val status: String
+    val status: String = ""
 )
