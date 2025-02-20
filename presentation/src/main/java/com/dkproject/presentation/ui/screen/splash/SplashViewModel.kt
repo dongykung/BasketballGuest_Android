@@ -27,7 +27,6 @@ class SplashViewModel @Inject constructor(
 
     private fun checkUserAuthentication() {
         val myUid = Firebase.auth.currentUser?.uid
-        println("gg ${myUid.toString()}")
         viewModelScope.launch {
             if (checkFirstUserUseCase(uid = myUid ?: "")) {
                 _uiState.update { AuthState.Authenticated }

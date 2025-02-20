@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dkproject.domain.model.User
 import com.dkproject.domain.usecase.auth.CheckNicknameUseCase
+import com.dkproject.domain.usecase.auth.SetFcmTokenUseCase
 import com.dkproject.domain.usecase.auth.UploadUserDataUseCase
 import com.dkproject.presentation.R
 import com.dkproject.presentation.model.Position
@@ -28,7 +29,8 @@ class SignUpViewModel @Inject constructor(
     @ApplicationContext val context: Context,
     private val auth: FirebaseAuth,
     private val checkNicknameUseCase: CheckNicknameUseCase,
-    private val uploadUserDataUseCase: UploadUserDataUseCase
+    private val uploadUserDataUseCase: UploadUserDataUseCase,
+    private val setFcmTokenUseCase: SetFcmTokenUseCase
 ): ViewModel() {
 
     private val _uiState = MutableStateFlow(SignUpViewState())
@@ -128,6 +130,7 @@ class SignUpViewModel @Inject constructor(
             val result = withContext(context = Dispatchers.IO) {
                 uploadUserDataUseCase(uiState.value.user)
             }
+            setFcmTokenUseCase(uiState.value.user.id)
             result.fold(
                 onSuccess = {
                     _uiEvent.emit(SignUpUiEvent.MoveToHome)
