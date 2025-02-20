@@ -10,4 +10,5 @@ interface GuestRepository {
     suspend fun uploadGuestPost(guestPost: GuestPost): Result<Unit>
     fun getGuestPostList(guestFilter: GuestFilter): Flow<PagingData<GuestPost>>
     suspend fun getPostUserStatus(postUid: String, userUid: String): UserStatus
+    suspend fun applyGuestPost(postUid: String, userUid: String)
 }
