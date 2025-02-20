@@ -42,7 +42,7 @@ fun SearchItem(
         }
         Spacer(modifier = Modifier.weight(1f))
         if (item.parkFlag == 1) {
-            Icon(Icons.Default.LocalParking, contentDescription = null, tint = Color.Blue,
+            Icon(Icons.Default.LocalParking, contentDescription = null, tint = Color.LightGray,
                 modifier = Modifier.align(Alignment.Top).padding(top = 16.dp, end = 16.dp))
         }
     }
