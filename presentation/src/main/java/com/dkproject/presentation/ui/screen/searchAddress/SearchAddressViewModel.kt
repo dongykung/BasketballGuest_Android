@@ -8,6 +8,8 @@ import androidx.paging.cachedIn
 import com.dkproject.domain.model.Poi
 import com.dkproject.domain.usecase.searchPlace.SearchPlaceUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -43,6 +45,7 @@ class SearchAddressViewModel @Inject constructor(
     private val _searchTrigger = MutableStateFlow(0)
 
 
+    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     val searchFlow: Flow<PagingData<Poi>> = combine(_searchQuery, _searchTrigger) { query, triger -> Pair(query, triger) }
             .debounce(500L)
             .distinctUntilChanged()
