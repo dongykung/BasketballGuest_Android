@@ -6,11 +6,13 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.net.Uri
+import android.os.Build
 import android.provider.Settings
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -46,6 +48,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -86,6 +89,7 @@ import com.dkproject.presentation.util.guestPostDummy
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
+import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import com.google.android.gms.location.LocationServices
@@ -100,6 +104,7 @@ fun GuestScreen(
     updateGuestFilter: (GuestFilterUiModel) -> Unit,
     onRefresh: () -> Unit,
     onFilterReset: (GuestFilterUiModel) -> Unit,
+    onNavigateToDetail: (GuestPostUiModel) -> Unit,
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
@@ -120,6 +125,15 @@ fun GuestScreen(
     )
     val locationPermissionState =
         rememberPermissionState(permission = Manifest.permission.ACCESS_FINE_LOCATION)
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        val notificationPermissionState = rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS)
+        LaunchedEffect(Unit) {
+            if (!notificationPermissionState.status.isGranted) {
+                notificationPermissionState.launchPermissionRequest()
+            }
+        }
+    }
 
     Column(modifier = modifier) {
 
@@ -162,7 +176,8 @@ fun GuestScreen(
             modifier = Modifier.fillMaxSize(),
             onRetry = { postLists.retry() },
             isRefreshing = uiState.isLoading,
-            onRefresh = onRefresh
+            onRefresh = onRefresh,
+            onNavigateToDetail = onNavigateToDetail
         )
     }
     if (isDateFilter) {
@@ -234,7 +249,8 @@ fun GuestPostsContent(
     modifier: Modifier = Modifier,
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
-    onRetry: () -> Unit
+    onRetry: () -> Unit,
+    onNavigateToDetail: (GuestPostUiModel) -> Unit
 ) {
     when (val refreshState = postLists.loadState.refresh) {
         is LoadState.Error -> {
@@ -265,6 +281,7 @@ fun GuestPostsContent(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(horizontal = 12.dp, vertical = 8.dp)
+                                        .clickable { onNavigateToDetail(guestPost) }
                                 )
                             }
                         }
