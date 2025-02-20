@@ -8,4 +8,5 @@ interface AuthRepository {
     suspend fun checkUserNickName(nickName: String): Boolean
     suspend fun uploadUserData(user: User): Result<Unit>
     suspend fun getUserData(userUid: String): User
+    suspend fun setFcmToken(userUid: String)
 }
