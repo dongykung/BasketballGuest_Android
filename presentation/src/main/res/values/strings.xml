@@ -72,5 +72,16 @@
     <string name="addresspermission">위치 권한이 필요합니다.</string>
     <string name="setting">설정하기</string>
     <string name="failgps">위치 정보를 가져오는데 실패했습니다.</string>
+    <string name="apply">신청하기</string>
+    <string name="applycancel">신청취소</string>
+    <string name="manage">게스트 관리</string>
+    <string name="cancelguest">게스트 취소</string>
+    <string name="defaulterror">데이터 로드에 실패했습니다. 잠시 후 다시 시도해 주세요</string>
+    <string name="nosuch">존재하지 않는 게시글 입니다.</string>
+    <string name="addressInfo">위치 정보</string>
+    <string name="addressname">장소명</string>
+    <string name="addressdetail">주소</string>
+    <string name="completeapply">게스트 신청이 완료되었습니다.</string>
+    <string name="failapply">게스트 신청에 실패했습니다. 다시 시도해 주세요</string>
 
 </resources>

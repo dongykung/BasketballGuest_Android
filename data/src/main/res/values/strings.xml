@@ -4,4 +4,6 @@
     <string name="httperror">A problem has occurred with the server.\n Please contact the administrator.</string>
     <string name="apierror">Invalid API key.\n Please contact the administrator.</string>
     <string name="dataerror">Data load failed.\nPlease try again later.</string>
+    <string name="nouser">User does not exist...</string>
+    <string name="defaulterror">Data load failed. Please try again later</string>
 </resources>

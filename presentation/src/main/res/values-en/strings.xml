@@ -71,4 +71,16 @@
     <string name="addresspermission">"Location permission is required. "</string>
     <string name="setting">Setting</string>
     <string name="failgps">"Failed to retrieve location information. "</string>
+    <string name="apply">Apply</string>
+    <string name="applycancel">"Cancel Application "</string>
+    <string name="manage">"Guest Management "</string>
+    <string name="cancelguest">"Guest Cancellation "</string>
+    <string name="defaulterror">Data load failed. Please try again later</string>
+    <string name="nosuch">"This post does not exist. "</string>
+    <string name="addressInfo">"location information "</string>
+    <string name="addressname">"Place Name "</string>
+    <string name="addressdetail">Address</string>
+    <string name="completeapply">"Guest application has been completed. "</string>
+    <string name="failapply">"Guest application failed. Please try again "</string>
+
 </resources>
