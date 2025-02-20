@@ -4,6 +4,7 @@ import com.dkproject.data.Repository.GuestRepositoryImpl
 import com.dkproject.data.Repository.SearchPlaceRepositoryImpl
 import com.dkproject.domain.repository.GuestRepository
 import com.dkproject.domain.repository.SearchPlaceRepository
+import com.dkproject.domain.usecase.Guest.ApplyGuestUseCase
 import com.dkproject.domain.usecase.Guest.GetGuestPostListUseCase
 import com.dkproject.domain.usecase.Guest.GetPostUserStatusUseCase
 import com.dkproject.domain.usecase.Guest.UploadGuestPostUseCase
@@ -29,6 +30,11 @@ object GuestUseCaseModule {
     @Provides
     fun getPostUserStatusUseCase(guestRepository: GuestRepository): GetPostUserStatusUseCase {
         return GetPostUserStatusUseCase(guestRepository)
+    }
+
+    @Provides
+    fun applyGuestPostUseCase(guestRepository: GuestRepository): ApplyGuestUseCase {
+        return ApplyGuestUseCase(guestRepository)
     }
 }
 
