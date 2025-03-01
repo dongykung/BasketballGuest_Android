@@ -9,11 +9,17 @@ import com.dkproject.domain.model.DataState
 import com.dkproject.domain.model.User
 import com.dkproject.domain.model.UserStatus
 import com.dkproject.domain.usecase.Guest.ApplyGuestUseCase
+import com.dkproject.domain.usecase.Guest.CancelGuestUseCase
+import com.dkproject.domain.usecase.Guest.DeleteGuestPostUseCase
+import com.dkproject.domain.usecase.Guest.GetPostDataUseCase
 import com.dkproject.domain.usecase.Guest.GetPostUserStatusUseCase
+import com.dkproject.domain.usecase.auth.DeleteMyParticipantUseCase
 import com.dkproject.domain.usecase.auth.GetUserDataUseCase
+import com.dkproject.domain.usecase.auth.SetApplyGuestUseCase
 import com.dkproject.presentation.R
 import com.dkproject.presentation.di.ResourceProvider
 import com.dkproject.presentation.model.GuestPostUiModel
+import com.dkproject.presentation.model.toUiModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestoreException
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,9 +43,14 @@ import javax.inject.Inject
 @HiltViewModel
 class GuestDetailViewModel @Inject constructor(
     private val auth: FirebaseAuth,
-    private val getUserDataUseCase: GetUserDataUseCase,
-    private val getPostUserStatusUseCase: GetPostUserStatusUseCase,
-    private val applyGuestUseCase: ApplyGuestUseCase,
+    private val getPostDataUseCase: GetPostDataUseCase,                 // 포스팅 데이터를 가져오는 UseCase
+    private val getUserDataUseCase: GetUserDataUseCase,                 // 작성자 정보를 가져오는 UseCase
+    private val getPostUserStatusUseCase: GetPostUserStatusUseCase,     // 포스팅에 대한 유저 상태를 가져오는 UseCase
+    private val applyGuestUseCase: ApplyGuestUseCase,                   // 게스트 신청하기 UseCase
+    private val setMyApplyGuestUseCase: SetApplyGuestUseCase,           // 내 신청 목록에 추가하는 UseCase
+    private val cancelGuestUseCase: CancelGuestUseCase,                 // 신청취소 UseCase
+    private val deleteMyParticipantUseCase: DeleteMyParticipantUseCase, // 내 신청 목록에서 삭제하는 UseCase
+    private val deleteGuestPostUseCase: DeleteGuestPostUseCase,         //글 삭제 UseCase
     private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
@@ -64,13 +75,16 @@ class GuestDetailViewModel @Inject constructor(
             val user = async(context = Dispatchers.IO) {
                 getUserDataUseCase(userUid = postDetail.writerUid)
             }
+            val postData = async(context = Dispatchers.IO) {
+                getPostDataUseCase(postUid = postDetail.id ?: "").toUiModel()
+            }
             val status = async(context = Dispatchers.IO) {
-                if(postDetail.writerUid == myUid) UserStatus.OWNER
+                if (postDetail.writerUid == myUid) UserStatus.OWNER
                 else getPostUserStatusUseCase(postUid = postDetail.id ?: "", userUid = myUid)
             }
             val result = DataState.Success(
                 PostDetailDataState(
-                    postDetail = postDetail,
+                    postDetail = postData.await(),
                     writerInfo = user.await(),
                     myStatus = status.await()
                 )
@@ -81,25 +95,28 @@ class GuestDetailViewModel @Inject constructor(
 
     private fun errorHandling(e: Throwable) {
         viewModelScope.launch {
-             when (e) {
+            when (e) {
                 is NoSuchElementException -> {
-                    _uiEvent.emit(DetailUiEvent.NavPopBackStack(resourceProvider.getString(R.string.nosuch)))
+                    _uiEvent.emit(DetailUiEvent.NoSuchData(resourceProvider.getString(R.string.nosuch)))
                 }
                 is IOException, is FirebaseFirestoreException -> {
                     _uiState.update { it.copy(dataState = DataState.Error(resourceProvider.getString(R.string.networkerror))) }
                 }
                 else -> {
-                    _uiState.update { it.copy(dataState = DataState.Error(resourceProvider.getString(R.string.defaulterror))) }
+                    _uiState.update { it.copy(dataState = DataState.Error(resourceProvider.getString(
+                                    R.string.defaulterror
+                                ))) }
                 }
             }
         }
     }
 
     fun applyButton(userStatus: UserStatus) {
-        when(userStatus) {
-            UserStatus.OWNER -> {}
+        when (userStatus) {
+            UserStatus.OWNER -> viewModelScope.launch { _uiEvent.emit(DetailUiEvent.ManageGuest) }
             UserStatus.GUEST -> {}
-            UserStatus.APPLY -> {}
+            UserStatus.DENIED -> {}
+            UserStatus.APPLY -> cancelGuest()
             UserStatus.NONE -> applyGuest()
         }
     }
@@ -113,13 +130,61 @@ class GuestDetailViewModel @Inject constructor(
             try {
                 withContext(context = Dispatchers.IO) {
                     applyGuestUseCase(postUid = postDetail.postDetail.id ?: "", userUid = myUid)
+                    setMyApplyGuestUseCase(myUid = myUid, postUid = postDetail.postDetail.id ?: "")
                 }
                 _uiEvent.emit(DetailUiEvent.ShowSnackbar(resourceProvider.getString(R.string.completeapply)))
-                _uiState.update { it.copy(dataState = DataState.Success(postDetail.copy(myStatus = UserStatus.APPLY)), statusLoading = false) }
+                _uiState.update {
+                    it.copy(
+                        dataState = DataState.Success(postDetail.copy(myStatus = UserStatus.APPLY)),
+                        statusLoading = false
+                    )
+                }
             } catch (e: Exception) {
                 _uiEvent.emit(DetailUiEvent.ShowSnackbar(resourceProvider.getString(R.string.failapply)))
                 setStatusLoading(false)
             }
+        }
+    }
+
+    fun cancelGuest() {
+        viewModelScope.launch {
+            val myUid = getCurrentUserId() ?: return@launch
+            val postDetail = getPostDetailData() ?: return@launch
+            setStatusLoading(true)
+
+            try {
+                withContext(context = Dispatchers.IO) {
+                    cancelGuestUseCase(postUid = postDetail.postDetail.id ?: "", userUid = myUid)
+                    deleteMyParticipantUseCase(
+                        myUid = myUid,
+                        postUid = postDetail.postDetail.id ?: ""
+                    )
+                }
+                _uiEvent.emit(DetailUiEvent.ShowSnackbar(resourceProvider.getString(R.string.completecancel)))
+                _uiState.update {
+                    it.copy(
+                        dataState = DataState.Success(postDetail.copy(myStatus = UserStatus.NONE)),
+                        statusLoading = false
+                    )
+                }
+            } catch (e: Exception) {
+                _uiEvent.emit(DetailUiEvent.ShowSnackbar(resourceProvider.getString(R.string.failcancel)))
+                setStatusLoading(false)
+            }
+        }
+    }
+
+    fun deletePost() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isDeleteLoading = true) }
+            val postData = getPostDetailData() ?: return@launch
+            val result = deleteGuestPostUseCase(postData.postDetail.id ?: "")
+            result.fold(onSuccess = {
+                _uiEvent.emit(DetailUiEvent.PopBackStack)
+            },onFailure = {
+                _uiState.update { it.copy(isDeleteLoading = false) }
+                _uiEvent.emit(DetailUiEvent.ShowSnackbar(resourceProvider.getString(R.string.faildeletepost)))
+            })
         }
     }
 
@@ -149,6 +214,7 @@ class GuestDetailViewModel @Inject constructor(
 data class PostDetailUiState(
     val dataState: DataState<PostDetailDataState> = DataState.Loading,
     val statusLoading: Boolean = false,
+    val isDeleteLoading: Boolean = false,
 )
 
 data class PostDetailDataState(
@@ -160,5 +226,8 @@ data class PostDetailDataState(
 sealed class DetailUiEvent {
     data class ShowSnackbar(val message: String) : DetailUiEvent()
     data object LoseLoginInfo : DetailUiEvent()
-    data class NavPopBackStack(val message: String) : DetailUiEvent()
+    data class NoSuchData(val message: String) : DetailUiEvent()
+    data object PopBackStack: DetailUiEvent()
+    data object DeleteCompletedPost : DetailUiEvent()
+    data object ManageGuest : DetailUiEvent()
 }

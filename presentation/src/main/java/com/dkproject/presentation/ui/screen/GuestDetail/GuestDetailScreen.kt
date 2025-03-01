@@ -39,6 +39,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -65,8 +66,11 @@ import com.dkproject.presentation.R
 import com.dkproject.presentation.extension.startTimeWithEndTime
 import com.dkproject.presentation.extension.toFormattedFilterDate
 import com.dkproject.presentation.extension.toFormattedHomeGuestListString
+import com.dkproject.presentation.model.GuestPostUiModel
 import com.dkproject.presentation.model.Position
 import com.dkproject.presentation.ui.component.DefaultProfileImage
+import com.dkproject.presentation.ui.component.PositionChip2
+import com.dkproject.presentation.ui.component.TextDialog
 import com.dkproject.presentation.ui.component.button.DefaultButton
 import com.dkproject.presentation.ui.component.util.ErrorScreen
 import com.dkproject.presentation.ui.component.util.LoadingScreen
@@ -83,6 +87,7 @@ import com.naver.maps.map.compose.MarkerState
 import com.naver.maps.map.compose.NaverMap
 import com.naver.maps.map.compose.rememberCameraPositionState
 import kotlinx.coroutines.flow.SharedFlow
+import kotlin.math.exp
 
 @Composable
 fun GuestDetailScreen(
@@ -93,6 +98,12 @@ fun GuestDetailScreen(
     navPopBackStack: () -> Unit = {},
     retryAction: () -> Unit = {},
     applyButton: (UserStatus) -> Unit,
+    onRefresh: () -> Unit,
+    navigateToMange: () -> Unit = {},
+    onEdit: () -> Unit = {},
+    secessionAction: () -> Unit = {},
+    onDelete: () -> Unit = {},
+    onDeleteBack: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -100,11 +111,15 @@ fun GuestDetailScreen(
         uiEvent.collect { event ->
             when (event) {
                 DetailUiEvent.LoseLoginInfo -> {}
+                DetailUiEvent.ManageGuest -> navigateToMange()
+                DetailUiEvent.DeleteCompletedPost -> onDeleteBack()
                 is DetailUiEvent.ShowSnackbar -> snackbarHostState.showSnackbar(event.message)
-                is DetailUiEvent.NavPopBackStack -> {
+                is DetailUiEvent.NoSuchData -> {
                     Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
                     navPopBackStack()
                 }
+
+                DetailUiEvent.PopBackStack -> navPopBackStack()
             }
         }
     }
@@ -114,7 +129,12 @@ fun GuestDetailScreen(
             guestDetail = uiState.dataState.data,
             statusLoading = uiState.statusLoading,
             navPopBackStack = navPopBackStack,
-            applyButton = applyButton
+            applyButton = applyButton,
+            onRefresh = onRefresh,
+            onEdit = onEdit,
+            secessionAction = secessionAction,
+            onDelete = onDelete,
+            modifier = modifier,
         )
 
         is DataState.Error -> ErrorScreen(
@@ -125,113 +145,130 @@ fun GuestDetailScreen(
     }
 }
 
-@OptIn(
-    ExperimentalMaterial3Api::class, ExperimentalNaverMapApi::class,
-    ExperimentalLayoutApi::class
-)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun GuestDetailScreen(
     guestDetail: PostDetailDataState,
     statusLoading: Boolean,
     navPopBackStack: () -> Unit,
     applyButton: (UserStatus) -> Unit = {},
+    onRefresh: () -> Unit,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit,
+    secessionAction: () -> Unit = {},
+    isDeleteLoading: Boolean = false,
     modifier: Modifier = Modifier
 ) {
+    var isSecessionDialog by remember { mutableStateOf(false) }
     val postDetail = guestDetail.postDetail
     val userData = guestDetail.writerInfo
     val userStatus = guestDetail.myStatus
     Box(modifier = modifier) {
         Column(modifier = Modifier) {
-            TopAppBar(
-                title = {},
-                navigationIcon = {
-                    IconButton(onClick = navPopBackStack) {
-                        Icon(
-                            Icons.AutoMirrored.Default.ArrowBack,
-                            null
+            GuestDetailTopAppBar(
+                navPopBackStack = navPopBackStack,
+                userStatus = userStatus,
+                onEdit = onEdit,
+                onDelete = onDelete
+            )
+            PullToRefreshBox(isRefreshing = false, onRefresh = onRefresh) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp)
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    WriterInfoSection(
+                        userData = userData,
+                        userStatus = userStatus,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Text(text = postDetail.title, style = MaterialTheme.typography.titleLarge)
+                    Row(
+                        modifier = Modifier.padding(top = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Default.CalendarMonth, null, tint = Color.LightGray)
+                        Text(
+                            modifier = Modifier.padding(start = 12.dp),
+                            text = postDetail.startDate.toFormattedFilterDate() + " " + startTimeWithEndTime(
+                                postDetail.startDate,
+                                postDetail.endDate
+                            ),
+                            style = MaterialTheme.typography.bodyMedium
                         )
                     }
-                },
-                actions = { IconButton(onClick = {}) { Icon(Icons.Default.MoreVert, null) } },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
-            )
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp)
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                WriterInfoSection(
-                    userData = userData,
-                    userStatus = userStatus,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Text(text = postDetail.title, style = MaterialTheme.typography.titleLarge)
-                Row(
-                    modifier = Modifier.padding(top = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(Icons.Default.CalendarMonth, null, tint = Color.LightGray)
-                    Text(
-                        modifier = Modifier.padding(start = 12.dp),
-                        text = postDetail.startDate.toFormattedFilterDate() + " " + startTimeWithEndTime(
-                            postDetail.startDate,
-                            postDetail.endDate
-                        ),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.PeopleAlt, null, tint = Color.LightGray)
-                    Text(
-                        modifier = Modifier.padding(start = 12.dp),
-                        text = "${postDetail.currentMember}/${postDetail.memberCount}",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.SportsBasketball, null, tint = Color.LightGray)
-                    FlowRow(
-                        modifier = Modifier.padding(start = 12.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        postDetail.positions.forEach { position ->
-                            Surface(
-                                shape = RoundedCornerShape(16.dp),
-                                color = Color(0XFFFFF7ED)
-                            ) {
-                                Text(
-                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                                    text = stringResource(Position.fromFirestoreValue(position).labelRes),
-                                    color = MaterialTheme.colorScheme.secondaryContainer
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.PeopleAlt, null, tint = Color.LightGray)
+                        Text(
+                            modifier = Modifier.padding(start = 12.dp),
+                            text = "${postDetail.currentMember}/${postDetail.memberCount}",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.SportsBasketball, null, tint = Color.LightGray)
+                        FlowRow(
+                            modifier = Modifier.padding(start = 12.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            postDetail.positions.forEach { position ->
+                                PositionChip2(
+                                    position = Position.fromFirestoreValue(position).labelRes,
+                                    backgroundColor = MaterialTheme.colorScheme.surfaceContainerLow
                                 )
                             }
                         }
                     }
-                }
-                Text(modifier = Modifier.padding(top = 8.dp), text = postDetail.description)
+                    Text(modifier = Modifier.padding(top = 8.dp), text = postDetail.description)
 
-                Spacer(modifier = Modifier.height(8.dp))
-                AddressSection(
-                    placeName = postDetail.placeName,
-                    placeAddress = postDetail.placeAddress,
-                    latLng = LatLng(postDetail.lat, postDetail.lng),
-                    modifier = Modifier
-                )
-                Spacer(modifier = Modifier.height(100.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
+                    AddressSection(
+                        placeName = postDetail.placeName,
+                        placeAddress = postDetail.placeAddress,
+                        latLng = LatLng(postDetail.lat, postDetail.lng),
+                        modifier = Modifier
+                    )
+                    Spacer(modifier = Modifier.height(100.dp))
+                }
             }
         }
-        Column(modifier = Modifier.align(Alignment.BottomCenter).background(MaterialTheme.colorScheme.background)) {
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .background(MaterialTheme.colorScheme.background)
+        ) {
             val buttonString = stringResource(GetUserStatusString(userStatus))
             HorizontalDivider()
-            DefaultButton(buttonString, onClick = { applyButton(userStatus) },
-                loading = statusLoading, //&& postDetail.currentMember != postDetail.memberCount,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp).fillMaxWidth())
+            DefaultButton(
+                buttonString,
+                onClick = {
+                    if (userStatus == UserStatus.GUEST) {
+                        isSecessionDialog = true
+                        return@DefaultButton
+                    }
+                    applyButton(userStatus)
+                },
+                loading = statusLoading,
+                enabled = userStatus != UserStatus.DENIED,
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                    .fillMaxWidth()
+            )
         }
     } // end Box
+    if (isSecessionDialog) {
+        TextDialog(title = stringResource(R.string.guestsecession),
+            message = stringResource(R.string.guestsecessionbody),
+            onConfirm = {
+                secessionAction()
+                isSecessionDialog = false
+            },
+            onDismiss = { isSecessionDialog = false })
+    }
 }
 
 @Composable
@@ -252,7 +289,9 @@ private fun WriterInfoSection(
                 contentScale = ContentScale.Crop,
                 placeholder = painterResource(R.drawable.placeholderimage),
                 contentDescription = null,
-                modifier = Modifier.clip(CircleShape).size(36.dp)
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .size(36.dp)
             )
         }
         Text(
@@ -343,7 +382,10 @@ private fun GuestDetailScreenPreview() {
 
             ), statusLoading = false,
             modifier = Modifier.fillMaxSize(),
-            navPopBackStack = {}
+            onRefresh = {},
+            navPopBackStack = {},
+            onEdit = {},
+            onDelete = {}
         )
     }
 }

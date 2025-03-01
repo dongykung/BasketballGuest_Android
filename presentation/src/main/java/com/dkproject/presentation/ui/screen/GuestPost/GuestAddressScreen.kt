@@ -35,6 +35,7 @@ fun GuestAddressScreen(
     modifier: Modifier = Modifier,
     detailAddress: String,
     loading: Boolean = true,
+    isEditMode: Boolean = false,
     onAddressChange: (Poi) -> Unit = {},
     onConfirmClick: () -> Unit = {}
 ) {
@@ -56,7 +57,7 @@ fun GuestAddressScreen(
         )
         Spacer(modifier = Modifier.height(32.dp))
         DefaultButton(
-            title = stringResource(R.string.complete),
+            title = if(isEditMode) stringResource(R.string.edit) else stringResource(R.string.complete),
             onClick = onConfirmClick,
             loading = loading,
             enabled = detailAddress.isNotEmpty(),
