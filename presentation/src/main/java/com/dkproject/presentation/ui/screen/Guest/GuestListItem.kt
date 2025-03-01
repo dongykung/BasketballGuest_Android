@@ -35,6 +35,7 @@ import com.dkproject.presentation.extension.toFormattedHomeGuestListString
 import com.dkproject.presentation.model.GuestPostUiModel
 import com.dkproject.presentation.model.Position
 import com.dkproject.presentation.ui.component.PositionChip
+import com.dkproject.presentation.ui.component.PositionChip2
 
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -45,7 +46,7 @@ fun GuestListItem(
 ) {
     Card(
         modifier = modifier,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
     ) {
         Column(
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
@@ -86,7 +87,7 @@ fun GuestListItem(
             ) {
                 guestPostUiModel.positions.forEach { position ->
                     val positionInt = Position.fromFirestoreValue(value = position)
-                    PositionChip(positionInt = positionInt.labelRes)
+                    PositionChip2(position = positionInt.labelRes, backgroundColor =  MaterialTheme.colorScheme.surfaceContainerLow)
                 }
             }
         }
