@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.dkproject.presentation.R
 import com.google.android.gms.location.LocationServices
@@ -22,11 +23,13 @@ suspend fun fetchLocation(context: Context): Location =
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
+            Log.d("failgps", "gps 못가져옴?")
             cont.resumeWithException(Exception(context.getString(R.string.failgps)))
         }
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
             location?.let { cont.resume(it) }
         }.addOnFailureListener { exception ->
+            Log.d("locationerror", exception.message.toString())
             cont.resumeWithException(Exception(context.getString(R.string.failgps)))
         }
     }
