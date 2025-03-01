@@ -6,6 +6,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.filled.ChatBubble
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.SportsBaseball
@@ -23,6 +24,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.toRoute
 import com.dkproject.presentation.R
@@ -37,6 +39,7 @@ fun BottomNavigation(
     val items = listOf(
         BottomNavItem.Guest,
         BottomNavItem.Chat,
+        BottomNavItem.Manage,
         BottomNavItem.Profile
     )
     AnimatedVisibility(
@@ -49,7 +52,13 @@ fun BottomNavigation(
                 NavigationBarItem(
                     selected = selected,
                     onClick = {
-                        navController.navigate(item.route)
+                        navController.navigate(item.route) {
+                            popUpTo(navController.graph.id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
                     },
                     icon = {
                         Icon(imageVector = getIcon(item.title), contentDescription = stringResource(item.description))
@@ -76,6 +85,7 @@ private fun getIcon(@StringRes title: Int): ImageVector {
         R.string.guest -> Icons.Filled.SportsBaseball
         R.string.chat -> Icons.Filled.ChatBubble
         R.string.mypage -> Icons.Filled.Person
+        R.string.bottomitemmanage -> Icons.AutoMirrored.Filled.Assignment
         else -> Icons.Filled.SportsBaseball
     }
 }
