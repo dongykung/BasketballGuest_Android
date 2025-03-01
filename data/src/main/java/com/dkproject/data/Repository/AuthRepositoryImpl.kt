@@ -6,7 +6,10 @@ import com.dkproject.data.R
 import com.dkproject.data.model.UserDTO
 import com.dkproject.data.model.toDTO
 import com.dkproject.data.model.toDomain
+import com.dkproject.domain.Error.ErrorType
+import com.dkproject.domain.model.UnitResult
 import com.dkproject.domain.model.User
+import com.dkproject.domain.model.UserPostStatus
 import com.dkproject.domain.repository.AuthRepository
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -71,11 +74,38 @@ class AuthRepositoryImpl @Inject constructor(
             firestore.collection("User")
                 .document(userUid)
                 .collection("FcmToken")
-                .document(token)
+                .document(userUid)
                 .set(tokenData)
                 .await()
         } catch (e: Exception) {
             throw e
         }
     }
+
+    override suspend fun setApplyGuest(myUid: String, postUid: String) {
+        try {
+            val data = UserPostStatus("APPLY")
+            firestore.collection("User").document(myUid).collection("Participants").document(postUid).set(data).await()
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    override suspend fun cancelApplyGuest(myUid: String, postUid: String) {
+        try {
+            firestore.collection("User").document(myUid).collection("Participants").document(postUid).delete().await()
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    override suspend fun setPermissionGuest(myUid: String, postUid: String): UnitResult {
+        return try {
+            firestore.collection("User").document(myUid).collection("Participants").document(postUid).update("status", "GUEST").await()
+            UnitResult.Success
+        } catch (e: Exception) {
+            UnitResult.Error(ErrorType.UNKNOWN_ERROR)
+        }
+    }
+
 }
