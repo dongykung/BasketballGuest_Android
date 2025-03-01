@@ -31,28 +31,47 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.dkproject.domain.model.Poi
 import com.dkproject.presentation.R
+import com.dkproject.presentation.model.GuestPostUiModel
+import com.dkproject.presentation.model.Position
 import com.dkproject.presentation.ui.theme.AppTheme
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.emptyFlow
+import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GuestPostScreen(
-    viewModel: GuestPostViewModel = hiltViewModel(),
+    uiState: GuestPostState,
+    uiEvent: SharedFlow<PostUiEvent>,
     snackbarHostState: SnackbarHostState,
+    updateCurrentStep: (GuestPostStep) -> Unit = {},
+    titleChange: (String) -> Unit = {},
+    descriptionChange: (String) -> Unit = {},
+    updateAddress: (Poi) -> Unit = {},
+    uploadPost: () -> Unit = {},
     onUpload: () -> Unit = {},
+    onEdit: () -> Unit = {},
+    onDateChange: (Date) -> Unit = {},
+    updateStartTime: (Date) -> Unit = {},
+    updateEndTime: (Date) -> Unit = {},
+    onPositionSelected: (Position) -> Unit = {},
+    memberCountChange: (Int) -> Unit = {},
     onBackClick: () -> Unit = {}
 ) {
 
-    LaunchedEffect(Unit) {
-        viewModel.uiEvent.collect { event ->
-            when(event) {
+    LaunchedEffect(uiEvent) {
+        uiEvent.collect { event ->
+            when (event) {
                 is PostUiEvent.ShowSnackbar -> snackbarHostState.showSnackbar(message = event.message)
                 PostUiEvent.UploadComplete -> onUpload()
+                PostUiEvent.UpdateComplete -> onEdit()
             }
         }
     }
 
-    val uiState by viewModel.uiState.collectAsState()
     val progressValue by animateFloatAsState(targetValue = uiState.currentStep.progress, label = "")
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -65,14 +84,11 @@ fun GuestPostScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = {
-                        if (uiState.currentStep == GuestPostStep.Description) onBackClick()
-                        else {
-                            when (uiState.currentStep) {
-                                GuestPostStep.Address -> viewModel.updateCurrentStep(GuestPostStep.Position)
-                                GuestPostStep.GuestDate -> viewModel.updateCurrentStep(GuestPostStep.Description)
-                                GuestPostStep.Position -> viewModel.updateCurrentStep(GuestPostStep.GuestDate)
-                                else -> {}
-                            }
+                        when (uiState.currentStep) {
+                            GuestPostStep.Address -> updateCurrentStep(GuestPostStep.Position)
+                            GuestPostStep.GuestDate -> updateCurrentStep(GuestPostStep.Description)
+                            GuestPostStep.Position -> updateCurrentStep(GuestPostStep.GuestDate)
+                            GuestPostStep.Description -> onBackClick()
                         }
                     }) {
                         Icon(
@@ -96,9 +112,9 @@ fun GuestPostScreen(
                         description = uiState.guestPost.description,
                         titleErrorMessage = uiState.titleErrorMessage,
                         descriptionErrorMessage = uiState.descriptionErrorMessage,
-                        titleChange = viewModel::updateTitle,
-                        descriptionChange = viewModel::updateDescription,
-                        onConfirmClick = { viewModel.updateCurrentStep(GuestPostStep.GuestDate) },
+                        titleChange = titleChange,
+                        descriptionChange = descriptionChange,
+                        onConfirmClick = { updateCurrentStep(GuestPostStep.GuestDate) },
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(16.dp)
@@ -107,10 +123,13 @@ fun GuestPostScreen(
                     GuestPostStep.Address -> {
                         GuestAddressScreen(
                             detailAddress = uiState.guestPost.placeName,
-                            modifier = Modifier.fillMaxSize().padding(16.dp),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp),
                             loading = uiState.isLoading,
-                            onAddressChange = viewModel::updateAddress,
-                            onConfirmClick = viewModel::uploadPost
+                            onAddressChange = updateAddress,
+                            isEditMode = uiState.isEditMode,
+                            onConfirmClick = uploadPost
                         )
                     }
 
@@ -118,10 +137,10 @@ fun GuestPostScreen(
                         date = uiState.guestPost.date,
                         startDate = uiState.guestPost.startDate,
                         endDate = uiState.guestPost.endDate,
-                        onDateChange = { viewModel.updateDate(it) },
-                        onStartDateChange = { viewModel.updateStartTime(it) },
-                        onEndDateChange = { viewModel.updateEndTime(it) },
-                        onConfirmClick = { viewModel.updateCurrentStep(GuestPostStep.Position) },
+                        onDateChange = onDateChange,
+                        onStartDateChange = updateStartTime,
+                        onEndDateChange = updateEndTime,
+                        onConfirmClick = { updateCurrentStep(GuestPostStep.Position) },
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(16.dp)
@@ -132,10 +151,10 @@ fun GuestPostScreen(
                             .fillMaxSize()
                             .padding(16.dp),
                         positions = uiState.guestPost.positions,
-                        onPositionSelected = { viewModel.updatePosition(it) },
-                        onConfirmClick = { viewModel.updateCurrentStep(GuestPostStep.Address) },
+                        onPositionSelected = onPositionSelected,
+                        onConfirmClick = { updateCurrentStep(GuestPostStep.Address) },
                         memberCount = uiState.guestPost.memberCount,
-                        memberCountChange = { viewModel.updateMemberCount(it) }
+                        memberCountChange = memberCountChange
                     )
                 }
             }
@@ -147,6 +166,6 @@ fun GuestPostScreen(
 @Preview(showBackground = true)
 private fun GuestPostScreenPreview() {
     AppTheme {
-        GuestPostScreen(snackbarHostState = remember { SnackbarHostState() })
+        GuestPostScreen(uiState = GuestPostState(), uiEvent = MutableSharedFlow<PostUiEvent>(),snackbarHostState = remember { SnackbarHostState() }, )
     }
 }

@@ -6,6 +6,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dkproject.domain.model.Poi
+import com.dkproject.domain.usecase.Guest.UpdateGuestPostUseCase
 import com.dkproject.domain.usecase.Guest.UploadGuestPostUseCase
 import com.dkproject.presentation.R
 import com.dkproject.presentation.extension.combineWithTimeFrom
@@ -33,6 +34,7 @@ import javax.inject.Inject
 class GuestPostViewModel @Inject constructor(
     private val auth: FirebaseAuth,
     private val uploadGuestPostUseCase: UploadGuestPostUseCase,
+    private val updateGuestPostUseCase: UpdateGuestPostUseCase,
     @ApplicationContext val context: Context
 ) : ViewModel() {
 
@@ -41,6 +43,10 @@ class GuestPostViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(GuestPostState())
     val uiState = _uiState.asStateFlow()
+
+    fun updateEditMode(guestPost: GuestPostUiModel) {
+        _uiState.update { it.copy(guestPost = guestPost, isEditMode = true) }
+    }
 
     fun updateCurrentStep(step: GuestPostStep) {
         _uiState.update { it.copy(currentStep = step) }
@@ -154,11 +160,13 @@ class GuestPostViewModel @Inject constructor(
                 )
             }
             val result = withContext(context = Dispatchers.IO) {
-                uploadGuestPostUseCase(uiState.value.guestPost.toDomainModel())
+                if (uiState.value.isEditMode) updateGuestPostUseCase(uiState.value.guestPost.id ?: "", uiState.value.guestPost.toDomainModel())
+                else uploadGuestPostUseCase(uiState.value.guestPost.toDomainModel())
             }
             result.fold(
                 onSuccess = {
-                    _uiEvent.emit(PostUiEvent.UploadComplete)
+                    if(uiState.value.isEditMode) _uiEvent.emit(PostUiEvent.UpdateComplete)
+                    else _uiEvent.emit(PostUiEvent.UploadComplete)
                 },
                 onFailure = { e ->
                     _uiEvent.emit(PostUiEvent.ShowSnackbar(getErrorMessage(e)))
@@ -190,9 +198,11 @@ data class GuestPostState(
     val isLoading: Boolean = false,
     val titleErrorMessage: String = "",
     val descriptionErrorMessage: String = "",
+    val isEditMode: Boolean = false
 )
 
 sealed class PostUiEvent {
     data class ShowSnackbar(val message: String) : PostUiEvent()
     data object UploadComplete : PostUiEvent()
+    data object UpdateComplete : PostUiEvent()
 }
