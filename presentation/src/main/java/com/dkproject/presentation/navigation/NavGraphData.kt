@@ -26,10 +26,13 @@ sealed class Screen {
     data object SignUp: Screen()
 
     @Serializable
-    data object Post: Screen()
+    data class Post(val post: String? = null): Screen()
 
     @Serializable
     data class GuestDetail(val post: String): Screen()
+
+    @Serializable
+    data class GuestManage(val postId: String): Screen()
 }
 
 @Serializable
@@ -43,6 +46,9 @@ sealed class BottomNavItem(
 
     @Serializable
     data object Chat : BottomNavItem(R.string.chat, R.string.chat, "chat")
+
+    @Serializable
+    data object Manage: BottomNavItem(R.string.bottomitemmanage, R.string.bottomitemmanage, "manage")
 
     @Serializable
     data object Profile : BottomNavItem(R.string.mypage, R.string.mypage,"profile")
