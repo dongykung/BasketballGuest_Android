@@ -12,6 +12,7 @@ import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -153,6 +154,7 @@ fun GuestScreen(
                         coroutineScope.launch {
                             try {
                                 val location = fetchLocation(context)
+                                Log.d("myloca", "${location.latitude}")
                                 val coordinate = Coordinate(latitude = location.latitude, longitude = location.longitude)
                                 val currentNearBy = uiState.guestFilter.isNearBy
                                 val newFilter = uiState.guestFilter.copy(
@@ -270,6 +272,7 @@ fun GuestPostsContent(
                 EmptyGuestScreen(modifier = Modifier.fillMaxSize())
             } else {
                 PullToRefreshBox(
+                    modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainerLow),
                     isRefreshing = isRefreshing,
                     onRefresh = onRefresh
                 ) {
