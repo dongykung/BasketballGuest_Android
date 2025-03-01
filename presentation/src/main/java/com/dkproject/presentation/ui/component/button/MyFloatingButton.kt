@@ -34,7 +34,7 @@ fun MyFloatingButton(
     ) {
         FloatingActionButton(
             onClick = {
-                navController.navigate(Screen.Post)
+                navController.navigate(Screen.Post())
             },
             shape = CircleShape,
             containerColor = MaterialTheme.colorScheme.secondaryContainer
