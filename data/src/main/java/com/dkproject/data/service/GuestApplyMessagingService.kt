@@ -22,11 +22,12 @@ class GuestApplyMessagingService: FirebaseMessagingService() {
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
 
-        val body = message.notification?.body ?: "none"
+        val title = message.notification?.title ?: "기본 제목"
+        val body = message.notification?.body ?: "기본 본문"
         Log.d("message", message.data.toString())
         Log.d("message", body)
 
-        createChannel("title", "messagebody", GUEST_CHANNEL_ID)
+        createChannel(title, body, GUEST_CHANNEL_ID)
     }
 
     override fun onNewToken(token: String) {
