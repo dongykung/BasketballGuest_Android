@@ -9,6 +9,7 @@ import com.dkproject.data.R
 import com.dkproject.data.data.paging.GuestManagePagingSource
 import com.dkproject.data.data.paging.GuestPagingSource
 import com.dkproject.data.model.GuestPostDTO
+import com.dkproject.data.model.UserPostStatusDTO
 import com.dkproject.data.model.toDTO
 import com.dkproject.data.model.toDomain
 import com.dkproject.domain.Error.ErrorType
@@ -58,7 +59,7 @@ class GuestRepositoryImpl @Inject constructor(
             if (!snapshot.exists()) {
                 return UserStatus.NONE
             }
-            val status = snapshot.toObject(UserPostStatus::class.java)
+            val status = snapshot.toObject(UserPostStatusDTO::class.java)
                 ?: throw Exception()
             return fromFirestoreValue(status.status)
         } catch (e: Exception) {
