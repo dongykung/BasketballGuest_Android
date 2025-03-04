@@ -4,6 +4,7 @@ import com.dkproject.data.Repository.GuestRepositoryImpl
 import com.dkproject.data.Repository.MyDataRepositoryImpl
 import com.dkproject.domain.repository.GuestRepository
 import com.dkproject.domain.repository.MyDataRepository
+import com.dkproject.domain.usecase.MyData.GetMyParticipantListUseCase
 import com.dkproject.domain.usecase.MyData.GetMyPostListUseCase
 import dagger.Binds
 import dagger.Module
@@ -18,6 +19,11 @@ object MyDataModule {
     @Provides
     fun provideGetMyPostListUseCase(myDataRepository: MyDataRepository): GetMyPostListUseCase {
         return GetMyPostListUseCase(myDataRepository = myDataRepository)
+    }
+
+    @Provides
+    fun provideGetMyParticipantListUseCase(myDataRepository: MyDataRepository): GetMyParticipantListUseCase {
+        return GetMyParticipantListUseCase(myDataRepository = myDataRepository)
     }
 }
 
