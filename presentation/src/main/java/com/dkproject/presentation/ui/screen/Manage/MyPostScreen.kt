@@ -25,6 +25,8 @@ import com.dkproject.presentation.ui.screen.Guest.GuestListItem
 @Composable
 fun MyPostScreen(
     myPostList: LazyPagingItems<GuestPostUiModel>,
+    isRefresh: Boolean,
+    onRefreshMyPost: () -> Unit = {},
     onNavigateToDetail: (GuestPostUiModel) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -34,8 +36,14 @@ fun MyPostScreen(
                 errorMessage = stringResource(R.string.defaulterror),
                 retryAction = { myPostList.retry() }
             )
+
             LoadState.Loading -> LoadingScreen(modifier = Modifier.fillMaxSize())
-            is LoadState.NotLoading -> MyPostContent(myPostList = myPostList, onNavigateToDetail = onNavigateToDetail)
+            is LoadState.NotLoading -> MyPostContent(
+                myPostList = myPostList,
+                isRefresh = isRefresh,
+                onNavigateToDetail = onNavigateToDetail,
+                onRefreshMyPost = onRefreshMyPost
+            )
         }
     }
 }
@@ -44,11 +52,13 @@ fun MyPostScreen(
 @Composable
 fun MyPostContent(
     myPostList: LazyPagingItems<GuestPostUiModel>,
+    isRefresh: Boolean,
+    onRefreshMyPost: () -> Unit = {},
     onNavigateToDetail: (GuestPostUiModel) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier) {
-        PullToRefreshBox(isRefreshing = false, onRefresh = {}) {
+        PullToRefreshBox(isRefreshing = isRefresh, onRefresh = onRefreshMyPost) {
             LazyColumn {
                 items(myPostList.itemCount) { index ->
                     myPostList[index]?.let { myPost ->
@@ -62,7 +72,7 @@ fun MyPostContent(
                     }
                 }
                 item {
-                    when(myPostList.loadState.append) {
+                    when (myPostList.loadState.append) {
                         is LoadState.Error -> FooterErrorScreen(modifier = Modifier.fillMaxWidth()) { myPostList.retry() }
                         LoadState.Loading -> LoadingScreen(modifier = Modifier.fillMaxWidth())
                         is LoadState.NotLoading -> {}
