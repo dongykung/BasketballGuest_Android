@@ -1,4 +1,4 @@
-package com.dkproject.presentation.ui.component
+package com.dkproject.presentation.ui.component.Image
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.CircleShape
