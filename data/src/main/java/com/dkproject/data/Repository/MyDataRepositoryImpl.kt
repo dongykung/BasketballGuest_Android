@@ -4,9 +4,11 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
+import com.dkproject.data.data.paging.MyParticipantsPagingSource
 import com.dkproject.data.data.paging.MyPostPagingSource
 import com.dkproject.data.model.toDomain
 import com.dkproject.domain.model.GuestPost
+import com.dkproject.domain.model.MyParticipant
 import com.dkproject.domain.repository.MyDataRepository
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
@@ -24,5 +26,14 @@ class MyDataRepositoryImpl @Inject constructor(
             }
         ).flow
             .map { it.map { dto -> dto.toDomain() } }
+    }
+
+    override fun getMyParticipantList(myUid: String): Flow<PagingData<MyParticipant>> {
+        return Pager(
+            config = PagingConfig(pageSize = 10, initialLoadSize = 10, prefetchDistance = 1),
+            pagingSourceFactory = {
+                MyParticipantsPagingSource(firestore = firestore, myUid = myUid)
+            }
+        ).flow
     }
 }
