@@ -33,9 +33,12 @@ enum class ManageType(@StringRes val title: Int) {
 fun ManageScreen(
     uiState: ManageUiState,
     onNavigateToDetail: (GuestPostUiModel) -> Unit,
+    onRefreshMyPost: () -> Unit = {},
+    onRefreshMyParticipant: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val myPostList = uiState.myPosts.collectAsLazyPagingItems()
+    val myParticipantList = uiState.myParticipants.collectAsLazyPagingItems()
     var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
     val tabListItem = listOf(ManageType.MYPOST, ManageType.MYAPPLY)
     Column(modifier = modifier.background(MaterialTheme.colorScheme.surfaceContainerLow)) {
@@ -62,8 +65,18 @@ fun ManageScreen(
             }
         }
         when (selectedIndex) {
-            0 -> MyPostScreen(myPostList = myPostList, onNavigateToDetail = onNavigateToDetail)
-            1 -> MyApplyScreen()
+            0 -> MyPostScreen(
+                myPostList = myPostList,
+                isRefresh = uiState.isMyPostRefresh,
+                onNavigateToDetail = onNavigateToDetail,
+                onRefreshMyPost = onRefreshMyPost
+            )
+            1 -> MyApplyScreen(
+                myParticipantList = myParticipantList,
+                isRefresh =  uiState.isMyParticipantRefresh,
+                onNavigateToDetail = onNavigateToDetail,
+                onRefreshMyParticipant = onRefreshMyParticipant
+            )
         }
     }
 }
