@@ -13,4 +13,9 @@ interface AuthRepository {
     suspend fun setApplyGuest(myUid: String, postUid: String)
     suspend fun cancelApplyGuest(myUid: String, postUid: String)
     suspend fun setPermissionGuest(myUid: String, postUid: String): UnitResult
+    suspend fun updatePosition(userUid: String, position: List<String>): UnitResult
+    suspend fun updateHeight(userUid: String, height: Int?): UnitResult
+    suspend fun updateWeight(userUid: String, weight: Int?): UnitResult
+    suspend fun updateNickname(userUid: String, nickname: String): UnitResult
+    suspend fun updateProfileImage(userUid: String, photoUri: String): UnitResult
 }
