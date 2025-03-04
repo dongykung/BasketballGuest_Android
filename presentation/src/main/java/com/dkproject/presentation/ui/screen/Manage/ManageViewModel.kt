@@ -7,6 +7,8 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
 import com.dkproject.domain.model.GuestPost
+import com.dkproject.domain.model.MyParticipant
+import com.dkproject.domain.usecase.MyData.GetMyParticipantListUseCase
 import com.dkproject.domain.usecase.MyData.GetMyPostListUseCase
 import com.dkproject.presentation.model.GuestPostUiModel
 import com.dkproject.presentation.model.toUiModel
@@ -29,7 +31,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ManageViewModel @Inject constructor(
     private val auth: FirebaseAuth,
-    private val getMyPostListUseCase: GetMyPostListUseCase
+    private val getMyPostListUseCase: GetMyPostListUseCase,
+    private val getMyParticipantListUseCase: GetMyParticipantListUseCase
 ): ViewModel() {
     private val _uiState = MutableStateFlow(ManageUiState())
     val uiState = _uiState.asStateFlow()
@@ -38,12 +41,22 @@ class ManageViewModel @Inject constructor(
     val uiEvent = _uiEvent.asSharedFlow()
 
     init {
-        refreshMyPostList()
+        viewModelScope.launch {
+            _uiState.update { it.copy(myPosts = buildMyPostListFlow(), myParticipants = buildMyParticipantListFlow()) }
+        }
     }
 
     fun refreshMyPostList() {
+        _uiState.update { it.copy(isMyPostRefresh = true) }
         viewModelScope.launch {
-            _uiState.update { it.copy(myPosts = buildMyPostListFlow()) }
+            _uiState.update { it.copy(myPosts = buildMyPostListFlow(), isMyPostRefresh = false) }
+        }
+    }
+
+    fun refreshMyParticipantList() {
+        _uiState.update { it.copy(isMyParticipantRefresh = true) }
+        viewModelScope.launch {
+            _uiState.update { it.copy(myParticipants = buildMyParticipantListFlow(), isMyParticipantRefresh = false) }
         }
     }
 
@@ -52,6 +65,13 @@ class ManageViewModel @Inject constructor(
         return getMyPostListUseCase(myUid = myUid)
             .flowOn(context = Dispatchers.IO)
             .map { it.map { domain -> domain.toUiModel() } }
+            .cachedIn(viewModelScope)
+    }
+
+    private suspend fun buildMyParticipantListFlow(): Flow<PagingData<MyParticipant>> {
+        val myUid = getCurrentUserId() ?: return emptyFlow()
+        return getMyParticipantListUseCase(myUid = myUid)
+            .flowOn(context = Dispatchers.IO)
             .cachedIn(viewModelScope)
     }
 
@@ -65,7 +85,10 @@ class ManageViewModel @Inject constructor(
 
 
 data class ManageUiState(
-    val myPosts: Flow<PagingData<GuestPostUiModel>> = emptyFlow()
+    val myPosts: Flow<PagingData<GuestPostUiModel>> = emptyFlow(),
+    val myParticipants: Flow<PagingData<MyParticipant>> = emptyFlow(),
+    val isMyPostRefresh: Boolean = false,
+    val isMyParticipantRefresh: Boolean = false
 )
 
 sealed class ManageUiEvent {
