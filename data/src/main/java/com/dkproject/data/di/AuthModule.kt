@@ -9,6 +9,11 @@ import com.dkproject.domain.usecase.auth.GetUserDataUseCase
 import com.dkproject.domain.usecase.auth.SetApplyGuestUseCase
 import com.dkproject.domain.usecase.auth.SetFcmTokenUseCase
 import com.dkproject.domain.usecase.auth.SetPermissionGuestUseCase
+import com.dkproject.domain.usecase.auth.UpdateUserHeightUseCase
+import com.dkproject.domain.usecase.auth.UpdateUserNicknameUseCase
+import com.dkproject.domain.usecase.auth.UpdateUserPositionUseCase
+import com.dkproject.domain.usecase.auth.UpdateUserProfileImageUseCase
+import com.dkproject.domain.usecase.auth.UpdateUserWeightUseCase
 import com.dkproject.domain.usecase.auth.UploadUserDataUseCase
 import dagger.Binds
 import dagger.Module
@@ -60,6 +65,31 @@ object ProvideAuthModule {
     @Provides
     fun provideSetPermissionGuestUseCase(authRepository: AuthRepository): SetPermissionGuestUseCase {
         return SetPermissionGuestUseCase(authRepository)
+    }
+
+    @Provides
+    fun provideUpdatePositionUseCase(authRepository: AuthRepository): UpdateUserPositionUseCase {
+        return UpdateUserPositionUseCase(authRepository)
+    }
+
+    @Provides
+    fun provideUpdateUserWeightUseCase(authRepository: AuthRepository): UpdateUserWeightUseCase {
+        return UpdateUserWeightUseCase(authRepository)
+    }
+
+    @Provides
+    fun provideUpdateUserHeightUseCase(authRepository: AuthRepository): UpdateUserHeightUseCase {
+        return UpdateUserHeightUseCase(authRepository)
+    }
+
+    @Provides
+    fun provideUpdateUserNicknameUseCase(authRepository: AuthRepository): UpdateUserNicknameUseCase {
+        return UpdateUserNicknameUseCase(authRepository)
+    }
+
+    @Provides
+    fun provideUpdateUserProfileImageUseCase(authRepository: AuthRepository): UpdateUserProfileImageUseCase {
+        return UpdateUserProfileImageUseCase(authRepository)
     }
 }
 
