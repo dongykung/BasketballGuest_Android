@@ -3,7 +3,22 @@ package com.dkproject.presentation.ui.screen.myPage
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dkproject.domain.model.DataState
+import com.dkproject.domain.model.UnitResult
+import com.dkproject.domain.model.User
+import com.dkproject.domain.usecase.File.UploadProfileImageUseCase
+import com.dkproject.domain.usecase.auth.CheckNicknameUseCase
+import com.dkproject.domain.usecase.auth.GetUserDataUseCase
+import com.dkproject.domain.usecase.auth.UpdateUserHeightUseCase
+import com.dkproject.domain.usecase.auth.UpdateUserNicknameUseCase
+import com.dkproject.domain.usecase.auth.UpdateUserPositionUseCase
+import com.dkproject.domain.usecase.auth.UpdateUserProfileImageUseCase
+import com.dkproject.domain.usecase.auth.UpdateUserWeightUseCase
+import com.dkproject.presentation.R
+import com.dkproject.presentation.di.ResourceProvider
+import com.dkproject.presentation.ui.screen.GuestDetail.DetailUiEvent
 import com.dkproject.presentation.ui.screen.login.GoogleSignInClient
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,11 +26,22 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okio.FileNotFoundException
 import javax.inject.Inject
 
 @HiltViewModel
 class MyPageViewModel @Inject constructor(
-    private val googleAuthClient: GoogleSignInClient
+    private val googleAuthClient: GoogleSignInClient,
+    private val auth: FirebaseAuth,
+    private val resourceProvider: ResourceProvider,
+    private val getUserDataUseCase: GetUserDataUseCase,
+    private val updateUserPositionUseCase: UpdateUserPositionUseCase,
+    private val updateUserHeightUseCase: UpdateUserHeightUseCase,
+    private val updateUserWeightUseCase: UpdateUserWeightUseCase,
+    private val checkNicknameUseCase: CheckNicknameUseCase,
+    private val updateUserNicknameUseCase: UpdateUserNicknameUseCase,
+    private val uploadProfileImageUseCase: UploadProfileImageUseCase,
+    private val updateUserProfileImageUseCase: UpdateUserProfileImageUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MyPageViewState())
@@ -24,19 +50,120 @@ class MyPageViewModel @Inject constructor(
     private val _uiEvent = MutableSharedFlow<MyPageUiEvent>()
     val uiEvent = _uiEvent.asSharedFlow()
 
-    fun onEvent(event: MyPageUiEvent) {
+    init {
+        loadMyData()
+    }
+
+    fun loadMyData() {
         viewModelScope.launch {
-            when (event) {
-                MyPageUiEvent.HideLogoutConfirmation -> _uiState.update { it.copy(isLogoutDialogVisible = false) }
-                MyPageUiEvent.NavigateToLogin -> {}
-                MyPageUiEvent.ShowLogoutConfirmation -> _uiState.update { it.copy(isLogoutDialogVisible = true) }
-                MyPageUiEvent.LogOut -> {
-                    googleAuthClient.signOut()
-                    _uiEvent.emit(MyPageUiEvent.NavigateToLogin)
-                }
+            val myUid = getCurrentUserId() ?: return@launch
+            try {
+                val result = getUserDataUseCase(userUid = myUid)
+                _uiState.update { it.copy(dataState = DataState.Success(result), isUpdateLoading = false) }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(dataState = DataState.Error(e.message.toString()), isUpdateLoading = false) }
             }
         }
     }
+
+    fun updateUserNickname(name: String) {
+        viewModelScope.launch {
+            val myUid = getCurrentUserId() ?: return@launch
+            _uiState.update { it.copy(isUpdateLoading = true) }
+            try {
+                val result = checkNicknameUseCase(nickName = name).getOrThrow()
+                if(result) {
+                    when(updateUserNicknameUseCase(userUid = myUid, nickname = name)) {
+                        is UnitResult.Error -> { throw Exception() }
+                        UnitResult.Success -> {
+                            _uiEvent.emit(MyPageUiEvent.CompleteChangeNickname)
+                            loadMyData()
+                        }
+                    }
+                } else {
+                    _uiState.update { it.copy(isUpdateLoading = false) }
+                    _uiEvent.emit(MyPageUiEvent.ShowToast(resourceProvider.getString(R.string.existnickname)))
+                }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(isUpdateLoading = false) }
+                _uiEvent.emit(MyPageUiEvent.ShowToast(resourceProvider.getString(R.string.failchangenickname)))
+            }
+        }
+    }
+
+    fun updateProfileImage(imageUri: String) {
+        viewModelScope.launch {
+            val myUid = getCurrentUserId() ?: return@launch
+            _uiState.update { it.copy(isUpdateLoading = true) }
+            try {
+                val downloadUrl = uploadProfileImageUseCase(uid = myUid, photoUri = imageUri)
+                when(updateUserProfileImageUseCase(userUid = myUid, photoUri = downloadUrl)) {
+                    is UnitResult.Error -> {
+                        errorHandling(resourceProvider.getString(R.string.uploadimagefail))
+                    }
+                    UnitResult.Success -> loadMyData()
+                }
+            } catch (e: FileNotFoundException) {
+                errorHandling(resourceProvider.getString(R.string.filenotfound))
+            } catch (e: Exception) {
+                Log.d("imagfail", e.message.toString())
+                errorHandling(resourceProvider.getString(R.string.uploadimagefail))
+            }
+        }
+    }
+
+    fun updateUserPosition(position: List<String>) {
+        viewModelScope.launch {
+            val myUid = getCurrentUserId() ?: return@launch
+            _uiState.update { it.copy(isUpdateLoading = true) }
+            when(updateUserPositionUseCase(userUid = myUid, position = position)) {
+                is UnitResult.Error -> {
+                    errorHandling(resourceProvider.getString(R.string.defaulterror))
+                }
+                UnitResult.Success -> loadMyData()
+            }
+        }
+    }
+
+    fun updateUserHeight(height: Int?) {
+        viewModelScope.launch {
+            val myUid = getCurrentUserId() ?: return@launch
+            _uiState.update { it.copy(isUpdateLoading = true) }
+            when(updateUserHeightUseCase(userUid = myUid, height = height)) {
+                is UnitResult.Error -> {
+                    errorHandling(resourceProvider.getString(R.string.defaulterror))
+                }
+                UnitResult.Success -> loadMyData()
+            }
+        }
+    }
+
+    fun updateUserWeight(weight: Int?) {
+        viewModelScope.launch {
+            val myUid = getCurrentUserId() ?: return@launch
+            _uiState.update { it.copy(isUpdateLoading = true) }
+            when(updateUserWeightUseCase(userUid = myUid, weight = weight)) {
+                is UnitResult.Error -> {
+                    errorHandling(resourceProvider.getString(R.string.defaulterror))
+                }
+                UnitResult.Success -> loadMyData()
+            }
+        }
+    }
+
+    private suspend fun getCurrentUserId(): String? {
+        return auth.currentUser?.uid ?: run {
+            _uiEvent.emit(MyPageUiEvent.ShowToast(resourceProvider.getString(R.string.loselogin)))
+            _uiEvent.emit(MyPageUiEvent.NavigateToLogin)
+            null
+        }
+    }
+
+    private  suspend fun errorHandling(errorMessage: String) {
+        _uiEvent.emit(MyPageUiEvent.ShowToast(errorMessage))
+        _uiState.update { it.copy(isUpdateLoading = false) }
+    }
+
 
     override fun onCleared() {
         super.onCleared()
@@ -46,12 +173,13 @@ class MyPageViewModel @Inject constructor(
 
 
 sealed class MyPageUiEvent {
-    data object ShowLogoutConfirmation : MyPageUiEvent()
-    data object HideLogoutConfirmation : MyPageUiEvent()
-    data object LogOut : MyPageUiEvent()
+    data class ShowToast(val message: String) : MyPageUiEvent()
     data object NavigateToLogin : MyPageUiEvent()
+    data class ShowSnackBar(val message: String) : MyPageUiEvent()
+    data object CompleteChangeNickname: MyPageUiEvent()
 }
 
 data class MyPageViewState(
-    val isLogoutDialogVisible: Boolean = false
+    val dataState: DataState<User> = DataState.Loading,
+    val isUpdateLoading: Boolean = false
 )
