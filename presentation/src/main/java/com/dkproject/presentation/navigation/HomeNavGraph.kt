@@ -48,13 +48,17 @@ fun NavGraphBuilder.homeNavGraph(
         }
     }
     composable(BottomNavItem.Profile.route) {
-        MyPageScreen(moveToLogin = {
-            navController.navigate(Screen.Login) {
-                popUpTo(navController.graph.id) {
-                    inclusive = true
+        MyPageScreen(
+            moveToLogin = {
+                navController.navigate(Screen.Login) {
+                    popUpTo(navController.graph.id) {
+                        inclusive = true
+                    }
+                    launchSingleTop = true
                 }
-                launchSingleTop = true
-            }
-        })
+            },
+            snackbarHostState = snackbarHostState,
+            modifier = modifier
+        )
     }
 }
