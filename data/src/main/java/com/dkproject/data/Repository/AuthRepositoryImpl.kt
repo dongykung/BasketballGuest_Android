@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.dkproject.data.R
 import com.dkproject.data.model.UserDTO
+import com.dkproject.data.model.UserPostStatusDTO
 import com.dkproject.data.model.toDTO
 import com.dkproject.data.model.toDomain
 import com.dkproject.domain.Error.ErrorType
@@ -84,7 +85,7 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun setApplyGuest(myUid: String, postUid: String) {
         try {
-            val data = UserPostStatus("APPLY")
+            val data = UserPostStatusDTO("APPLY")
             firestore.collection("User").document(myUid).collection("Participants").document(postUid).set(data).await()
         } catch (e: Exception) {
             throw e
@@ -108,4 +109,48 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun updatePosition(userUid: String, position: List<String>): UnitResult {
+        return try {
+            firestore.collection("User").document(userUid).update("position", position).await()
+            UnitResult.Success
+        } catch (e: Exception) {
+            UnitResult.Error(ErrorType.UNKNOWN_ERROR)
+        }
+    }
+
+    override suspend fun updateHeight(userUid: String, height: Int?): UnitResult {
+        return try {
+            firestore.collection("User").document(userUid).update("height", height).await()
+            UnitResult.Success
+        } catch (e: Exception) {
+            UnitResult.Error(ErrorType.UNKNOWN_ERROR)
+        }
+    }
+
+    override suspend fun updateWeight(userUid: String, weight: Int?): UnitResult {
+        return try {
+            firestore.collection("User").document(userUid).update("weight", weight).await()
+            UnitResult.Success
+        } catch (e: Exception) {
+            UnitResult.Error(ErrorType.UNKNOWN_ERROR)
+        }
+    }
+
+    override suspend fun updateNickname(userUid: String, nickname: String): UnitResult {
+        return try {
+            firestore.collection("User").document(userUid).update("nickName", nickname).await()
+            UnitResult.Success
+        } catch (e: Exception) {
+            UnitResult.Error(ErrorType.UNKNOWN_ERROR)
+        }
+    }
+
+    override suspend fun updateProfileImage(userUid: String, photoUri: String): UnitResult {
+        return try {
+            firestore.collection("User").document(userUid).update("profileImageUrl", photoUri).await()
+            UnitResult.Success
+        } catch (e: Exception) {
+            UnitResult.Error(ErrorType.UNKNOWN_ERROR)
+        }
+    }
 }
