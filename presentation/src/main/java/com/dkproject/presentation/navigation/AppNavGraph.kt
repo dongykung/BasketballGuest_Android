@@ -16,10 +16,12 @@ import androidx.navigation.compose.rememberNavController
 fun AppNavGraph(navController: NavHostController,
                 modifier: Modifier = Modifier,
                 snackbarHostState: SnackbarHostState) {
-    NavHost(navController = navController, startDestination = Screen.Post) {
+    NavHost(navController = navController, startDestination = BottomNavItem.Guest.route) {
         authNavGraph(navController = navController, snackbarHostState = snackbarHostState)
-        HomeNavGraph(navController = navController, modifier = modifier)
+        homeNavGraph(navController = navController, snackbarHostState = snackbarHostState, modifier = modifier)
+        guestNavGraph(navController = navController, snackbarHostState = snackbarHostState, modifier = modifier)
         createGuestGraph(navController = navController, snackbarHostState = snackbarHostState)
+        manageGraph(navController = navController, snackbarHostState = snackbarHostState, modifier = modifier)
     }
 }
 
