@@ -62,6 +62,8 @@ dependencies {
     implementation(libs.firebase.messaging)
     implementation(libs.google.firebase.analytics)
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.storage)
+
 
     //serialization
     implementation(libs.serialization.json)
