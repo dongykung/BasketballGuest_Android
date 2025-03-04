@@ -1,4 +1,4 @@
-package com.dkproject.presentation.ui.component
+package com.dkproject.presentation.ui.component.sheet
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Arrangement
