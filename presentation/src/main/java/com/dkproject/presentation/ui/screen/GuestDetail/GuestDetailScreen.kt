@@ -1,6 +1,5 @@
 package com.dkproject.presentation.ui.screen.GuestDetail
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -20,25 +19,16 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.MoreHoriz
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PeopleAlt
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.SportsBasketball
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -65,10 +55,8 @@ import com.dkproject.domain.model.UserStatus
 import com.dkproject.presentation.R
 import com.dkproject.presentation.extension.startTimeWithEndTime
 import com.dkproject.presentation.extension.toFormattedFilterDate
-import com.dkproject.presentation.extension.toFormattedHomeGuestListString
-import com.dkproject.presentation.model.GuestPostUiModel
 import com.dkproject.presentation.model.Position
-import com.dkproject.presentation.ui.component.DefaultProfileImage
+import com.dkproject.presentation.ui.component.Image.DefaultProfileImage
 import com.dkproject.presentation.ui.component.PositionChip2
 import com.dkproject.presentation.ui.component.TextDialog
 import com.dkproject.presentation.ui.component.button.DefaultButton
@@ -87,7 +75,6 @@ import com.naver.maps.map.compose.MarkerState
 import com.naver.maps.map.compose.NaverMap
 import com.naver.maps.map.compose.rememberCameraPositionState
 import kotlinx.coroutines.flow.SharedFlow
-import kotlin.math.exp
 
 @Composable
 fun GuestDetailScreen(
