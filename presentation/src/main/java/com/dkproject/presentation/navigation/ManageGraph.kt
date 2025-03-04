@@ -31,6 +31,8 @@ fun NavGraphBuilder.manageGraph(
                     launchSingleTop = true
                 }
             },
+            onRefreshMyPost = { viewModel.refreshMyPostList() },
+            onRefreshMyParticipant = { viewModel.refreshMyParticipantList() },
             modifier = modifier
         )
     }
