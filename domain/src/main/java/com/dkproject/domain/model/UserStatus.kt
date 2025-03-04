@@ -4,11 +4,13 @@ import com.dkproject.domain.model.UserStatus.APPLY
 import com.dkproject.domain.model.UserStatus.GUEST
 import com.dkproject.domain.model.UserStatus.NONE
 import com.dkproject.domain.model.UserStatus.OWNER
+import com.dkproject.domain.model.UserStatus.DENIED
 
 enum class UserStatus {
     OWNER,
     GUEST,
     APPLY,
+    DENIED,
     NONE;
 }
 
@@ -17,6 +19,7 @@ fun fromFirestoreValue(value: String): UserStatus {
         "OWNER" -> OWNER
         "GUEST" -> GUEST
         "APPLY" -> APPLY
+        "DENIED" -> DENIED
         else -> NONE
     }
 }
