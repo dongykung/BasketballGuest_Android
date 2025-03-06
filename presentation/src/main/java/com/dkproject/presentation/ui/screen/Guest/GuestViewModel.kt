@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
-import com.dkproject.domain.model.GuestFilter
+import com.dkproject.domain.model.Guest.GuestFilter
 import com.dkproject.domain.usecase.Guest.GetGuestPostListUseCase
 import com.dkproject.presentation.model.GuestFilterUiModel
 import com.dkproject.presentation.model.GuestPostUiModel
