@@ -73,6 +73,12 @@ dependencies {
     implementation(libs.retrofit.converter.json)
     implementation(libs.okhttp)
 
+    //room
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    implementation(libs.room.paging)
+    ksp(libs.room.compiler)
+
     //paging
     implementation(libs.androidx.paging.runtime)
 
