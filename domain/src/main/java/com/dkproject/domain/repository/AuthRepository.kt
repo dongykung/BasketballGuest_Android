@@ -1,7 +1,7 @@
 package com.dkproject.domain.repository
 
 import com.dkproject.domain.model.UnitResult
-import com.dkproject.domain.model.User
+import com.dkproject.domain.model.User.User
 
 interface AuthRepository {
     suspend fun checkUserUid(uid: String): Boolean
