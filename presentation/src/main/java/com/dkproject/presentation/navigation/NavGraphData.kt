@@ -23,16 +23,24 @@ sealed class Screen {
     data object Login : Screen()
 
     @Serializable
-    data object SignUp: Screen()
+    data object SignUp : Screen()
 
     @Serializable
-    data class Post(val post: String? = null): Screen()
+    data class Post(val post: String? = null) : Screen()
 
     @Serializable
-    data class GuestDetail(val post: String): Screen()
+    data class GuestDetail(val post: String) : Screen()
 
     @Serializable
-    data class GuestManage(val postId: String): Screen()
+    data class GuestManage(val postId: String) : Screen()
+
+    @Serializable
+    data class Chat(
+        val chatRoomId: String,
+        val otherUserUid: String,
+        val otherUserName: String,
+        val otherProfileUrl: String,
+    ) : Screen()
 }
 
 @Serializable
@@ -48,10 +56,11 @@ sealed class BottomNavItem(
     data object Chat : BottomNavItem(R.string.chat, R.string.chat, "chat")
 
     @Serializable
-    data object Manage: BottomNavItem(R.string.bottomitemmanage, R.string.bottomitemmanage, "manage")
+    data object Manage :
+        BottomNavItem(R.string.bottomitemmanage, R.string.bottomitemmanage, "manage")
 
     @Serializable
-    data object Profile : BottomNavItem(R.string.mypage, R.string.mypage,"profile")
+    data object Profile : BottomNavItem(R.string.mypage, R.string.mypage, "profile")
 }
 
 
