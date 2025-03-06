@@ -1,4 +1,4 @@
-package com.dkproject.domain.model
+package com.dkproject.domain.model.User
 
 data class User(
     val id: String = "",
