@@ -1,6 +1,6 @@
 package com.dkproject.data.model
 
-import com.dkproject.domain.model.User
+import com.dkproject.domain.model.User.User
 import com.google.firebase.firestore.DocumentId
 
 data class UserDTO(
