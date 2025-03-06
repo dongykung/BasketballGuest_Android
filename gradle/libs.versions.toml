@@ -40,7 +40,7 @@ material = "1.10.0"
 credentialsPlayServiceAuth = "1.5.0-rc01"
 googleid = "1.1.1"
 
-
+room = "2.6.1"
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 androidx-credentials = {module = "androidx.credentials:credentials", version.ref = "credentialsPlayServiceAuth"}
@@ -99,6 +99,10 @@ material = { group = "com.google.android.material", name = "material", version.r
 
 androidx-icons-extended = {group = "androidx.compose.material", name = "material-icons-extended"}
 
+room-runtime = {group = "androidx.room", name = "room-runtime", version.ref = "room"}
+room-compiler = {group = "androidx.room", name = "room-compiler", version.ref = "room"}
+room-ktx = {group = "androidx.room", name = "room-ktx", version.ref = "room"}
+room-paging = {group = "androidx.room", name = "room-paging", version.ref = "room"}
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
