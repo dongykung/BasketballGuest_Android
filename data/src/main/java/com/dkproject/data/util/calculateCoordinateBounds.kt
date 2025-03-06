@@ -1,6 +1,6 @@
 package com.dkproject.data.util
 
-import com.dkproject.domain.model.Coordinate
+import com.dkproject.domain.model.Guest.Coordinate
 import kotlin.math.PI
 import kotlin.math.cos
 
