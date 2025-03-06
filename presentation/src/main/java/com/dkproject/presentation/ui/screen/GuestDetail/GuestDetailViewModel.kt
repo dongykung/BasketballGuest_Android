@@ -1,13 +1,11 @@
 package com.dkproject.presentation.ui.screen.GuestDetail
 
-import android.content.Context
 import android.util.Log
-import androidx.compose.foundation.interaction.DragInteraction
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dkproject.domain.model.DataState
-import com.dkproject.domain.model.User
-import com.dkproject.domain.model.UserStatus
+import com.dkproject.domain.model.User.User
+import com.dkproject.domain.model.User.UserStatus
 import com.dkproject.domain.usecase.Guest.ApplyGuestUseCase
 import com.dkproject.domain.usecase.Guest.CancelGuestUseCase
 import com.dkproject.domain.usecase.Guest.DeleteGuestPostUseCase
@@ -20,11 +18,11 @@ import com.dkproject.presentation.R
 import com.dkproject.presentation.di.ResourceProvider
 import com.dkproject.presentation.model.GuestPostUiModel
 import com.dkproject.presentation.model.toUiModel
+import com.dkproject.presentation.navigation.Screen
+import com.dkproject.presentation.util.generateChatRoomId
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestoreException
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -35,7 +33,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
 import okio.IOException
 import javax.inject.Inject
@@ -99,13 +96,29 @@ class GuestDetailViewModel @Inject constructor(
                 is NoSuchElementException -> {
                     _uiEvent.emit(DetailUiEvent.NoSuchData(resourceProvider.getString(R.string.nosuch)))
                 }
+
                 is IOException, is FirebaseFirestoreException -> {
-                    _uiState.update { it.copy(dataState = DataState.Error(resourceProvider.getString(R.string.networkerror))) }
+                    _uiState.update {
+                        it.copy(
+                            dataState = DataState.Error(
+                                resourceProvider.getString(
+                                    R.string.networkerror
+                                )
+                            )
+                        )
+                    }
                 }
+
                 else -> {
-                    _uiState.update { it.copy(dataState = DataState.Error(resourceProvider.getString(
+                    _uiState.update {
+                        it.copy(
+                            dataState = DataState.Error(
+                                resourceProvider.getString(
                                     R.string.defaulterror
-                                ))) }
+                                )
+                            )
+                        )
+                    }
                 }
             }
         }
@@ -181,7 +194,7 @@ class GuestDetailViewModel @Inject constructor(
             val result = deleteGuestPostUseCase(postData.postDetail.id ?: "")
             result.fold(onSuccess = {
                 _uiEvent.emit(DetailUiEvent.PopBackStack)
-            },onFailure = {
+            }, onFailure = {
                 _uiState.update { it.copy(isDeleteLoading = false) }
                 _uiEvent.emit(DetailUiEvent.ShowSnackbar(resourceProvider.getString(R.string.faildeletepost)))
             })
@@ -205,8 +218,30 @@ class GuestDetailViewModel @Inject constructor(
         }
     }
 
+    fun onChatClick(otherUserUid: String, otherUserNickname: String, otherProfileUrl: String) {
+        viewModelScope.launch {
+            val myUid = getCurrentUserId() ?: return@launch
+            val chatRoomId = generateChatRoomId(uid1 = myUid, uid2 = otherUserUid)
+            _uiEvent.emit(
+                DetailUiEvent.NavigateChat(
+                    Screen.Chat(
+                        chatRoomId = chatRoomId,
+                        otherUserUid = otherUserUid,
+                        otherUserName = otherUserNickname,
+                        otherProfileUrl = otherProfileUrl
+                    )
+                )
+            )
+        }
+    }
+
     private fun setStatusLoading(isLoading: Boolean) {
         _uiState.update { it.copy(statusLoading = isLoading) }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        Log.d("GuestDetailViewModel", "onCleared")
     }
 }
 
@@ -227,7 +262,8 @@ sealed class DetailUiEvent {
     data class ShowSnackbar(val message: String) : DetailUiEvent()
     data object LoseLoginInfo : DetailUiEvent()
     data class NoSuchData(val message: String) : DetailUiEvent()
-    data object PopBackStack: DetailUiEvent()
+    data object PopBackStack : DetailUiEvent()
     data object DeleteCompletedPost : DetailUiEvent()
     data object ManageGuest : DetailUiEvent()
+    data class NavigateChat(val chat: Screen.Chat) : DetailUiEvent()
 }
