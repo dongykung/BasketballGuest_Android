@@ -10,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
@@ -89,6 +90,18 @@ fun NavGraphBuilder.guestNavGraph(
             onDeleteBack = {
                 navController.previousBackStackEntry?.savedStateHandle?.set("post_deleted", true)
                 navController.popBackStack()
+            },
+            onChatClick = { otherUserUid, otherUserNickname, otherProfileImage ->
+                viewModel.onChatClick(otherUserUid = otherUserUid, otherUserNickname = otherUserNickname, otherProfileUrl = otherProfileImage)
+            },
+            navigateToChat = { chat ->
+                navController.navigate(route = chat) {
+                    popUpTo(Screen.GuestDetail(postDetail.post)) {
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                }
             },
             modifier = Modifier.fillMaxSize()
         )
