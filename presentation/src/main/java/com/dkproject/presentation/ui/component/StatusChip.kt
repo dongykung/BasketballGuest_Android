@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.dkproject.domain.model.UserStatus
+import com.dkproject.domain.model.User.UserStatus
 import com.dkproject.presentation.ui.theme.AppTheme
 import com.dkproject.presentation.util.getGeustStatusColorSet
 import com.dkproject.presentation.util.getGuestManageStatusString
