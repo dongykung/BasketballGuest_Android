@@ -115,5 +115,7 @@
     <string name="failchangenickname">"Failed to change nickname. Please try again. "</string>
     <string name="filenotfound">"The file cannot be found. "</string>
     <string name="uploadimagefail">"Photo upload failed. Please try again "</string>
+    <string name="failcreatechatroom">"Chat room creation failed. Please try again. "</string>
+    <string name="failsendmessage">"Message delivery failed. Please try again. "</string>
 
 </resources>
