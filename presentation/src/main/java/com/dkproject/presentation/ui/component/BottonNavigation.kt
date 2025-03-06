@@ -11,6 +11,8 @@ import androidx.compose.material.icons.filled.ChatBubble
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.SportsBaseball
 import androidx.compose.material.icons.outlined.SportsBaseball
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -27,13 +29,17 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.toRoute
+import com.dkproject.domain.model.Chat.ChatRoom
 import com.dkproject.presentation.R
 import com.dkproject.presentation.navigation.BottomNavItem
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun BottomNavigation(
-    navController: NavController
+    navController: NavController,
+    chatRoomList: List<ChatRoom>
 ) {
+    val auth = FirebaseAuth.getInstance()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val items = listOf(
@@ -42,6 +48,7 @@ fun BottomNavigation(
         BottomNavItem.Manage,
         BottomNavItem.Profile
     )
+    val unReadCount: Int = chatRoomList.sumOf { it.unReadCount[auth.currentUser?.uid] ?: 0 }
     AnimatedVisibility(
         visible = items.map { it.route }.contains(currentRoute),
         enter = fadeIn()
@@ -61,7 +68,18 @@ fun BottomNavigation(
                         }
                     },
                     icon = {
-                        Icon(imageVector = getIcon(item.title), contentDescription = stringResource(item.description))
+                        if(item == BottomNavItem.Chat)
+                        BadgedBox(
+                            badge = {
+                                if (unReadCount >0) {
+                                    Badge() { Text(text = "$unReadCount") }
+                                }
+                            }
+                        ) {
+                            Icon(imageVector = getIcon(item.title), contentDescription = stringResource(item.description))
+                        }
+                         else Icon(imageVector = getIcon(item.title), contentDescription = stringResource(item.description))
+
                     },
                     label = {
                         Text(text = stringResource(item.description),
