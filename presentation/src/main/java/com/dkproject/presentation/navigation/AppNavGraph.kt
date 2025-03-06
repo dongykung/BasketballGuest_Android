@@ -1,27 +1,25 @@
 package com.dkproject.presentation.navigation
 
-import android.content.Context
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import com.dkproject.domain.model.Chat.ChatRoom
 
 @Composable
 fun AppNavGraph(navController: NavHostController,
                 modifier: Modifier = Modifier,
-                snackbarHostState: SnackbarHostState) {
-    NavHost(navController = navController, startDestination = BottomNavItem.Guest.route) {
+                snackbarHostState: SnackbarHostState,
+                chatRoomList: List<ChatRoom> = emptyList(),
+) {
+    NavHost(navController = navController, startDestination = Screen.Splash) {
         authNavGraph(navController = navController, snackbarHostState = snackbarHostState)
-        homeNavGraph(navController = navController, snackbarHostState = snackbarHostState, modifier = modifier)
         guestNavGraph(navController = navController, snackbarHostState = snackbarHostState, modifier = modifier)
         createGuestGraph(navController = navController, snackbarHostState = snackbarHostState)
+        profileNavGraph(navController = navController, snackbarHostState = snackbarHostState, modifier = modifier)
         manageGraph(navController = navController, snackbarHostState = snackbarHostState, modifier = modifier)
+        chatNavGraph(navController = navController, snackbarHostState = snackbarHostState, modifier = modifier, chatRoomList = chatRoomList)
     }
 }
 
