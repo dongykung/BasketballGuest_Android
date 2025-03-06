@@ -1,8 +1,7 @@
 package com.dkproject.data.model
 
-import com.dkproject.domain.model.GuestPost
+import com.dkproject.domain.model.Guest.GuestPost
 import com.google.firebase.firestore.DocumentId
-import kotlinx.serialization.Serializable
 import java.util.Date
 
 data class GuestPostDTO(

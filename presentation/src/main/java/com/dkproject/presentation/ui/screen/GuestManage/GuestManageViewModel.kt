@@ -5,15 +5,14 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.dkproject.domain.Error.ErrorType
-import com.dkproject.domain.model.GuestManage
+import com.dkproject.domain.model.GuestManage.GuestManage
 import com.dkproject.domain.model.UnitResult
-import com.dkproject.domain.model.UserStatus
+import com.dkproject.domain.model.User.UserStatus
 import com.dkproject.domain.usecase.Guest.AcceptGuestUseCase
 import com.dkproject.domain.usecase.Guest.GetGuestManageListUseCase
 import com.dkproject.domain.usecase.Guest.RejectGuestUseCase
 import com.dkproject.presentation.R
 import com.dkproject.presentation.di.ResourceProvider
-import com.google.firebase.firestore.FirebaseFirestoreException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

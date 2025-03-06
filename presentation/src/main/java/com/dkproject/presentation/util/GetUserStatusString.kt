@@ -1,7 +1,7 @@
 package com.dkproject.presentation.util
 
 import androidx.compose.ui.graphics.Color
-import com.dkproject.domain.model.UserStatus
+import com.dkproject.domain.model.User.UserStatus
 import com.dkproject.presentation.R
 
 fun GetUserStatusString(userStatus: UserStatus): Int {

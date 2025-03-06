@@ -8,13 +8,12 @@ import com.dkproject.data.R
 import com.dkproject.data.model.GuestPostDTO
 import com.dkproject.data.model.toDomain
 import com.dkproject.data.util.calculateCoordinateBounds
-import com.dkproject.domain.model.GuestFilter
-import com.dkproject.domain.model.GuestPost
+import com.dkproject.domain.model.Guest.GuestFilter
+import com.dkproject.domain.model.Guest.GuestPost
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.QuerySnapshot
-import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext

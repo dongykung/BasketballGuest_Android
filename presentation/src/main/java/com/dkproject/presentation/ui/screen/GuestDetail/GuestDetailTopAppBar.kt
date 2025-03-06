@@ -15,7 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.dkproject.domain.model.UserStatus
+import com.dkproject.domain.model.User.UserStatus
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -50,9 +50,9 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.dkproject.domain.model.GuestManage
-import com.dkproject.domain.model.User
-import com.dkproject.domain.model.UserStatus
+import com.dkproject.domain.model.GuestManage.GuestManage
+import com.dkproject.domain.model.User.User
+import com.dkproject.domain.model.User.UserStatus
 import com.dkproject.presentation.R
 import com.dkproject.presentation.model.Position
 import com.dkproject.presentation.navigation.DefaultCenterTopBar

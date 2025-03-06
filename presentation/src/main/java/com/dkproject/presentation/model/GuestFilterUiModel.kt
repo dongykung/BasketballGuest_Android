@@ -1,7 +1,7 @@
 package com.dkproject.presentation.model
 
-import com.dkproject.domain.model.Coordinate
-import com.dkproject.domain.model.GuestFilter
+import com.dkproject.domain.model.Guest.Coordinate
+import com.dkproject.domain.model.Guest.GuestFilter
 import java.util.Date
 
 data class GuestFilterUiModel(

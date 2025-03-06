@@ -1,9 +1,8 @@
 package com.dkproject.presentation.model
 
-import com.dkproject.domain.model.GuestPost
+import com.dkproject.domain.model.Guest.GuestPost
 import com.dkproject.presentation.util.DateSerializer
 import kotlinx.serialization.Serializable
-import java.time.Instant
 import java.util.Date
 
 @Serializable
