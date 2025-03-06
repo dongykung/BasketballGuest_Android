@@ -1,11 +1,9 @@
 package com.dkproject.data.Repository
 
 import android.content.Context
-import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import com.dkproject.data.R
 import com.dkproject.data.data.paging.GuestManagePagingSource
 import com.dkproject.data.data.paging.GuestPagingSource
 import com.dkproject.data.model.GuestPostDTO
@@ -13,22 +11,20 @@ import com.dkproject.data.model.UserPostStatusDTO
 import com.dkproject.data.model.toDTO
 import com.dkproject.data.model.toDomain
 import com.dkproject.domain.Error.ErrorType
-import com.dkproject.domain.model.GuestFilter
-import com.dkproject.domain.model.GuestManage
-import com.dkproject.domain.model.GuestPost
+import com.dkproject.domain.model.Guest.GuestFilter
+import com.dkproject.domain.model.GuestManage.GuestManage
+import com.dkproject.domain.model.Guest.GuestPost
 import com.dkproject.domain.model.UnitResult
-import com.dkproject.domain.model.UserPostStatus
-import com.dkproject.domain.model.UserStatus
-import com.dkproject.domain.model.fromFirestoreValue
+import com.dkproject.domain.model.User.UserPostStatus
+import com.dkproject.domain.model.User.UserStatus
+import com.dkproject.domain.model.User.fromFirestoreValue
 import com.dkproject.domain.repository.GuestRepository
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.SetOptions
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.tasks.await
-import okio.IOException
 import javax.inject.Inject
 
 class GuestRepositoryImpl @Inject constructor(
