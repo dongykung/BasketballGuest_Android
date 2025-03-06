@@ -1,11 +1,11 @@
 package com.dkproject.domain.repository
 
 import androidx.paging.PagingData
-import com.dkproject.domain.model.GuestFilter
-import com.dkproject.domain.model.GuestManage
-import com.dkproject.domain.model.GuestPost
+import com.dkproject.domain.model.Guest.GuestFilter
+import com.dkproject.domain.model.GuestManage.GuestManage
+import com.dkproject.domain.model.Guest.GuestPost
 import com.dkproject.domain.model.UnitResult
-import com.dkproject.domain.model.UserStatus
+import com.dkproject.domain.model.User.UserStatus
 import kotlinx.coroutines.flow.Flow
 
 interface GuestRepository {
