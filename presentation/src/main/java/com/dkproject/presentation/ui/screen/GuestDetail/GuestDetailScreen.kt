@@ -50,12 +50,13 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.dkproject.domain.model.DataState
-import com.dkproject.domain.model.User
-import com.dkproject.domain.model.UserStatus
+import com.dkproject.domain.model.User.User
+import com.dkproject.domain.model.User.UserStatus
 import com.dkproject.presentation.R
 import com.dkproject.presentation.extension.startTimeWithEndTime
 import com.dkproject.presentation.extension.toFormattedFilterDate
 import com.dkproject.presentation.model.Position
+import com.dkproject.presentation.navigation.Screen
 import com.dkproject.presentation.ui.component.Image.DefaultProfileImage
 import com.dkproject.presentation.ui.component.PositionChip2
 import com.dkproject.presentation.ui.component.TextDialog
@@ -81,16 +82,18 @@ fun GuestDetailScreen(
     uiState: PostDetailUiState,
     uiEvent: SharedFlow<DetailUiEvent>,
     snackbarHostState: SnackbarHostState,
-    loseLoginInfo: () -> Unit = {},
-    navPopBackStack: () -> Unit = {},
-    retryAction: () -> Unit = {},
-    applyButton: (UserStatus) -> Unit,
-    onRefresh: () -> Unit,
-    navigateToMange: () -> Unit = {},
-    onEdit: () -> Unit = {},
-    secessionAction: () -> Unit = {},
-    onDelete: () -> Unit = {},
-    onDeleteBack: () -> Unit = {},
+    loseLoginInfo: () -> Unit = {},     // 로그인 정보 잃음
+    navPopBackStack: () -> Unit = {},   // 뒤로가기
+    retryAction: () -> Unit = {},       // 재시도 액션
+    applyButton: (UserStatus) -> Unit,  // 게스트 신청하기 버튼 눌림
+    onRefresh: () -> Unit,             // 새로고침
+    navigateToMange: () -> Unit = {},  // 게스트 관리로 이동
+    onEdit: () -> Unit = {},          // 포스트 수정하기 눌림
+    secessionAction: () -> Unit = {}, // 게스트 탈퇴하기 버튼 눌림
+    onDelete: () -> Unit = {},     // 삭제하기 버튼 눌림
+    onChatClick: (String, String, String) -> Unit, // 유저가 상대방과 채팅하기 버튼을 클릭(이동하기 위해 데이터 준비)
+    onDeleteBack: () -> Unit = {}, // 글 삭제가 완료되어 뒤로가기 후 새로고침
+    navigateToChat: (Screen.Chat) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -105,7 +108,9 @@ fun GuestDetailScreen(
                     Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
                     navPopBackStack()
                 }
-
+                is DetailUiEvent.NavigateChat -> {
+                    navigateToChat(event.chat)
+                }
                 DetailUiEvent.PopBackStack -> navPopBackStack()
             }
         }
@@ -121,6 +126,7 @@ fun GuestDetailScreen(
             onEdit = onEdit,
             secessionAction = secessionAction,
             onDelete = onDelete,
+            onChatClick = onChatClick,
             modifier = modifier,
         )
 
@@ -142,6 +148,7 @@ fun GuestDetailScreen(
     onRefresh: () -> Unit,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
+    onChatClick: (String, String, String) -> Unit,
     secessionAction: () -> Unit = {},
     isDeleteLoading: Boolean = false,
     modifier: Modifier = Modifier
@@ -169,6 +176,7 @@ fun GuestDetailScreen(
                     WriterInfoSection(
                         userData = userData,
                         userStatus = userStatus,
+                        onChatClick = { onChatClick(userData.id, userData.nickName, userData.profileImageUrl) },
                         modifier = Modifier.fillMaxWidth()
                     )
                     Text(text = postDetail.title, style = MaterialTheme.typography.titleLarge)
@@ -262,6 +270,7 @@ fun GuestDetailScreen(
 private fun WriterInfoSection(
     userData: User,
     userStatus: UserStatus,
+    onChatClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
@@ -288,7 +297,7 @@ private fun WriterInfoSection(
         )
         Spacer(modifier = Modifier.weight(1f))
         if (userStatus != UserStatus.OWNER) {
-            TextButton(onClick = {}) {
+            TextButton(onClick = onChatClick) {
                 Text(
                     stringResource(R.string.chat),
                     color = MaterialTheme.colorScheme.secondaryContainer,
@@ -372,7 +381,8 @@ private fun GuestDetailScreenPreview() {
             onRefresh = {},
             navPopBackStack = {},
             onEdit = {},
-            onDelete = {}
+            onDelete = {},
+            onChatClick = { _, _ , _->},
         )
     }
 }
