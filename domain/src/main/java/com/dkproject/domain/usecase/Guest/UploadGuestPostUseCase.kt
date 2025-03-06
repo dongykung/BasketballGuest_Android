@@ -1,6 +1,6 @@
 package com.dkproject.domain.usecase.Guest
 
-import com.dkproject.domain.model.GuestPost
+import com.dkproject.domain.model.Guest.GuestPost
 import com.dkproject.domain.repository.GuestRepository
 
 class UploadGuestPostUseCase(

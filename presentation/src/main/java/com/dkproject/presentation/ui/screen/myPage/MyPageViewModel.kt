@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dkproject.domain.model.DataState
 import com.dkproject.domain.model.UnitResult
-import com.dkproject.domain.model.User
+import com.dkproject.domain.model.User.User
 import com.dkproject.domain.usecase.File.UploadProfileImageUseCase
 import com.dkproject.domain.usecase.auth.CheckNicknameUseCase
 import com.dkproject.domain.usecase.auth.GetUserDataUseCase
@@ -16,7 +16,6 @@ import com.dkproject.domain.usecase.auth.UpdateUserProfileImageUseCase
 import com.dkproject.domain.usecase.auth.UpdateUserWeightUseCase
 import com.dkproject.presentation.R
 import com.dkproject.presentation.di.ResourceProvider
-import com.dkproject.presentation.ui.screen.GuestDetail.DetailUiEvent
 import com.dkproject.presentation.ui.screen.login.GoogleSignInClient
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -3,7 +3,6 @@ package com.dkproject.data.data.paging
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.dkproject.data.model.GuestPostDTO
-import com.dkproject.domain.model.GuestPost
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query

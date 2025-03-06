@@ -4,8 +4,8 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.dkproject.data.model.GuestPostDTO
 import com.dkproject.data.model.toDomain
-import com.dkproject.domain.model.MyParticipant
-import com.dkproject.domain.model.fromFirestoreValue
+import com.dkproject.domain.model.MyData.MyParticipant
+import com.dkproject.domain.model.User.fromFirestoreValue
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query

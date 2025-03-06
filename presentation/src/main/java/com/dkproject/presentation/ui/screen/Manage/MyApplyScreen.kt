@@ -25,7 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
-import com.dkproject.domain.model.MyParticipant
+import com.dkproject.domain.model.MyData.MyParticipant
 import com.dkproject.presentation.R
 import com.dkproject.presentation.extension.startTimeWithEndTime
 import com.dkproject.presentation.extension.toFormattedHomeGuestListString

@@ -2,17 +2,14 @@ package com.dkproject.presentation.ui.screen.Manage
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
-import com.dkproject.domain.model.GuestPost
-import com.dkproject.domain.model.MyParticipant
+import com.dkproject.domain.model.MyData.MyParticipant
 import com.dkproject.domain.usecase.MyData.GetMyParticipantListUseCase
 import com.dkproject.domain.usecase.MyData.GetMyPostListUseCase
 import com.dkproject.presentation.model.GuestPostUiModel
 import com.dkproject.presentation.model.toUiModel
-import com.dkproject.presentation.ui.screen.GuestDetail.DetailUiEvent
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

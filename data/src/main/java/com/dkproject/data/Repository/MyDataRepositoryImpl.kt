@@ -7,8 +7,8 @@ import androidx.paging.map
 import com.dkproject.data.data.paging.MyParticipantsPagingSource
 import com.dkproject.data.data.paging.MyPostPagingSource
 import com.dkproject.data.model.toDomain
-import com.dkproject.domain.model.GuestPost
-import com.dkproject.domain.model.MyParticipant
+import com.dkproject.domain.model.Guest.GuestPost
+import com.dkproject.domain.model.MyData.MyParticipant
 import com.dkproject.domain.repository.MyDataRepository
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow

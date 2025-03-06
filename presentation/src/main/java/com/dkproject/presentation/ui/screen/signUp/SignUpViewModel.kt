@@ -2,10 +2,9 @@ package com.dkproject.presentation.ui.screen.signUp
 
 import android.content.Context
 import android.util.Log
-import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dkproject.domain.model.User
+import com.dkproject.domain.model.User.User
 import com.dkproject.domain.usecase.auth.CheckNicknameUseCase
 import com.dkproject.domain.usecase.auth.SetFcmTokenUseCase
 import com.dkproject.domain.usecase.auth.UploadUserDataUseCase
