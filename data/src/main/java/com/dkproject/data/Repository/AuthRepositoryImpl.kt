@@ -1,27 +1,20 @@
 package com.dkproject.data.Repository
 
 import android.content.Context
-import android.util.Log
 import com.dkproject.data.R
 import com.dkproject.data.model.UserDTO
 import com.dkproject.data.model.UserPostStatusDTO
 import com.dkproject.data.model.toDTO
-import com.dkproject.data.model.toDomain
 import com.dkproject.domain.Error.ErrorType
 import com.dkproject.domain.model.UnitResult
-import com.dkproject.domain.model.User
-import com.dkproject.domain.model.UserPostStatus
+import com.dkproject.domain.model.User.User
 import com.dkproject.domain.repository.AuthRepository
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreException
-import com.google.firebase.firestore.toObject
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
-import com.google.firebase.messaging.messaging
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.tasks.await
-import okio.IOException
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
