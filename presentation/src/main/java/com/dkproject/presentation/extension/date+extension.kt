@@ -51,3 +51,28 @@ fun startTimeWithEndTime(startTime: Date, endTime: Date): String {
     val formatter2 = SimpleDateFormat("h:mm", Locale.getDefault())
     return formatter.format(startTime) + " ~ " + formatter2.format(endTime)
 }
+
+
+fun Date.toFormattedChatRoomDate(): String {
+    val now = Calendar.getInstance()
+    val cal = Calendar.getInstance().apply { time = this@toFormattedChatRoomDate }
+
+    if (now.get(Calendar.YEAR) == cal.get(Calendar.YEAR) &&
+        now.get(Calendar.DAY_OF_YEAR) == cal.get(Calendar.DAY_OF_YEAR)) {
+        val timeFormat = SimpleDateFormat("a h시 m분", Locale("ko", "KR"))
+        return timeFormat.format(this)
+    }
+
+    val yesterday = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -1) }
+    if (cal.get(Calendar.YEAR) == yesterday.get(Calendar.YEAR) &&
+        cal.get(Calendar.DAY_OF_YEAR) == yesterday.get(Calendar.DAY_OF_YEAR)) {
+        return "어제"
+    }
+    return if (cal.get(Calendar.YEAR) == now.get(Calendar.YEAR)) {
+        val formatter = SimpleDateFormat("M월 d일", Locale("ko", "KR"))
+        formatter.format(this)
+    } else {
+        val formatter = SimpleDateFormat("yyyy.MM.dd", Locale("ko", "KR"))
+        formatter.format(this)
+    }
+}
