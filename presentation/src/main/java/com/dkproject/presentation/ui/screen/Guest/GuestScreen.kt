@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.dkproject.domain.model.Coordinate
+import com.dkproject.domain.model.Guest.Coordinate
 import com.dkproject.presentation.R
 import com.dkproject.presentation.extension.withTime
 import com.dkproject.presentation.model.GuestFilterUiModel
