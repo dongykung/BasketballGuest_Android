@@ -1,6 +1,6 @@
 package com.dkproject.data.model
 
-import com.dkproject.domain.model.UserPostStatus
+import com.dkproject.domain.model.User.UserPostStatus
 import com.google.firebase.firestore.ServerTimestamp
 import java.util.Date
 

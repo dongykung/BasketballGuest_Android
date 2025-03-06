@@ -1,10 +1,10 @@
-package com.dkproject.domain.model
+package com.dkproject.domain.model.User
 
-import com.dkproject.domain.model.UserStatus.APPLY
-import com.dkproject.domain.model.UserStatus.GUEST
-import com.dkproject.domain.model.UserStatus.NONE
-import com.dkproject.domain.model.UserStatus.OWNER
-import com.dkproject.domain.model.UserStatus.DENIED
+import com.dkproject.domain.model.User.UserStatus.APPLY
+import com.dkproject.domain.model.User.UserStatus.GUEST
+import com.dkproject.domain.model.User.UserStatus.NONE
+import com.dkproject.domain.model.User.UserStatus.OWNER
+import com.dkproject.domain.model.User.UserStatus.DENIED
 
 enum class UserStatus {
     OWNER,
