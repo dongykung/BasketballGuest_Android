@@ -1,7 +1,7 @@
 package com.dkproject.domain.usecase.MyData
 
 import androidx.paging.PagingData
-import com.dkproject.domain.model.GuestPost
+import com.dkproject.domain.model.Guest.GuestPost
 import com.dkproject.domain.repository.MyDataRepository
 import kotlinx.coroutines.flow.Flow
 
