@@ -1,13 +1,15 @@
 package com.dkproject.presentation.ui.screen.Chat
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -15,9 +17,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -25,7 +29,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,7 +44,6 @@ import com.dkproject.presentation.ui.component.Image.DefaultProfileImage
 import com.dkproject.presentation.ui.theme.AppTheme
 import java.util.Calendar
 import java.util.Date
-import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,15 +75,38 @@ fun ChatScreen(
             modifier = Modifier.weight(1f)
         )
 
-        Row(modifier = Modifier.fillMaxWidth()) {
-            TextField(
-                value = chatMessage,
-                onValueChange = updateChatMessage,
-                modifier = Modifier.weight(1f),
-                maxLines = 2
-            )
-            Button(onClick = onSendClick) {
-                Text("전송")
+        Column(modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp)
+            .imePadding()) {
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp, horizontal = 6.dp),
+                verticalAlignment = Alignment.CenterVertically) {
+                BasicTextField(
+                    value = chatMessage,
+                    onValueChange = updateChatMessage,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = 8.dp),
+                    maxLines = 2,
+                ) { innerTextField ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(22.dp))
+                            .background(Color.LightGray)
+                            .height(48.dp) // 여기서 고정 높이를 지정 (원하는 높이에 맞게 조절)
+                            .padding(horizontal = 8.dp),
+                        contentAlignment = Alignment.CenterStart // 텍스트를 왼쪽 정렬
+                    ) {
+                        innerTextField()
+                    }
+                }
+                Button(onClick = onSendClick,
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+                    enabled = chatMessage.isNotEmpty()
+                ) {
+                    Text("전송")
+                }
             }
         }
     }
@@ -107,19 +132,25 @@ fun ChatList(
         groupedChats.forEach { (date, chats) ->
             items(chats.sortedByDescending { it.createAt }) { chat ->
                 if(chat.sender == otherUserUid) {
-                    OtherUserChat(chat = chat, modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp, vertical = 8.dp))
+                    OtherUserChat(chat = chat, modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 6.dp, vertical = 8.dp))
                 } else {
-                    MyChat(chat = chat, otherUserUid = otherUserUid, modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp, vertical = 8.dp))
+                    MyChat(chat = chat, otherUserUid = otherUserUid, modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 6.dp, vertical = 8.dp))
                 }
             }
-            stickyHeader {
-                Row(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp), horizontalArrangement = Arrangement.Center) {
-                   Surface(shape = RoundedCornerShape(16.dp), color = Color.LightGray) {
-                       Text(text = date.toFormattedfullString(),
-                           style = MaterialTheme.typography.bodyMedium,
-                           modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                           )
-                   }
+            item {
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp), horizontalArrangement = Arrangement.Center) {
+                    Surface(shape = RoundedCornerShape(16.dp), color = Color.LightGray) {
+                        Text(text = date.toFormattedfullString(),
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                        )
+                    }
                 }
             }
         }
@@ -205,7 +236,9 @@ private fun PreviewMyChat() {
                         sender = "d",
                         readBy = listOf("d")
                     ), otherUserUid = "d",
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp, vertical = 8.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 6.dp, vertical = 8.dp)
                 )
             }
             item {
@@ -217,10 +250,49 @@ private fun PreviewMyChat() {
                         sender = "",
                         readBy = emptyList()
                     ),
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp, vertical = 8.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 6.dp, vertical = 8.dp)
                 )
+            }
+            item {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Row(modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp, horizontal = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically) {
+                        BasicTextField(
+                            value = "",
+                            onValueChange = {},
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(horizontal = 8.dp),
+                            maxLines = 2,
+                            ) { innerTextField ->
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(22.dp))
+                                    .background(Color.LightGray)
+                                    .height(48.dp) // 여기서 고정 높이를 지정 (원하는 높이에 맞게 조절)
+                                    .padding(horizontal = 8.dp),
+                                contentAlignment = Alignment.CenterStart // 텍스트를 왼쪽 정렬
+                            ) {
+                                innerTextField()
+                            }
+                        }
+
+                        Button(onClick = {  },
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+                            enabled = "f".isNotEmpty()
+                        ) {
+                            Text("전송")
+                        }
+                    }
+                }
             }
         }
 
     }
 }
+
