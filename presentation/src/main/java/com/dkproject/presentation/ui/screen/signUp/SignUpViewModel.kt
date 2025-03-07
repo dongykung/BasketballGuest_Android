@@ -162,6 +162,6 @@ sealed class SignUpStep(val title: Int, val progress: Float) {
 data class SignUpViewState (
     val currentStep: SignUpStep = SignUpStep.Nickname,
     val isLoading: Boolean = false,
-    val user: User = User(),
+    val user: User = User(height = null, weight = null),
     val errorMessage: String = ""
 )
