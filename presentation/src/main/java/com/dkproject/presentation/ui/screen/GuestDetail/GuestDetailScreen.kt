@@ -1,7 +1,12 @@
 package com.dkproject.presentation.ui.screen.GuestDetail
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,6 +33,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -176,7 +183,13 @@ fun GuestDetailScreen(
                     WriterInfoSection(
                         userData = userData,
                         userStatus = userStatus,
-                        onChatClick = { onChatClick(userData.id, userData.nickName, userData.profileImageUrl) },
+                        onChatClick = {
+                            onChatClick(
+                                userData.id,
+                                userData.nickName,
+                                userData.profileImageUrl
+                            )
+                        },
                         modifier = Modifier.fillMaxWidth()
                     )
                     Text(text = postDetail.title, style = MaterialTheme.typography.titleLarge)
@@ -320,6 +333,8 @@ fun AddressSection(
     val cameraPositionState: CameraPositionState = rememberCameraPositionState {
         position = CameraPosition(LatLng(latLng.latitude, latLng.longitude), 15.0)
     }
+    val clipBoard =
+        LocalContext.current.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(14.dp)) {
         Text(
             text = stringResource(R.string.addressInfo),
@@ -328,26 +343,37 @@ fun AddressSection(
         Row {
             Text(
                 text = stringResource(R.string.addressname),
-                modifier = Modifier.weight(3f), textAlign = TextAlign.Start,
+                modifier = Modifier.width(64.dp), textAlign = TextAlign.Start,
                 color = Color.Gray,
                 style = MaterialTheme.typography.bodyMedium
             )
+            Spacer(modifier = Modifier.width(18.dp))
             Text(
-                text = placeName, modifier = Modifier.weight(8f), textAlign = TextAlign.Start,
+                text = placeName, modifier = Modifier, textAlign = TextAlign.Start,
                 style = MaterialTheme.typography.bodyMedium
             )
         }
-        Row {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = stringResource(R.string.addressdetail),
-                modifier = Modifier.weight(3f), textAlign = TextAlign.Start,
+                modifier = Modifier.width(64.dp), textAlign = TextAlign.Start,
                 color = Color.Gray,
                 style = MaterialTheme.typography.bodyMedium
             )
+            Spacer(modifier = Modifier.width(18.dp))
             Text(
-                text = placeAddress, modifier = Modifier.weight(8f), textAlign = TextAlign.Start,
+                text = placeAddress, modifier = Modifier, textAlign = TextAlign.Start,
                 style = MaterialTheme.typography.bodyMedium
             )
+            Spacer(modifier = Modifier.weight(1f))
+            Surface(shape = RoundedCornerShape(22.dp),
+                border = BorderStroke(1.dp, Color.LightGray),
+                modifier = Modifier.clickable {
+                    val clip: ClipData = ClipData.newPlainText("address", placeAddress)
+                    clipBoard.setPrimaryClip(clip)
+                }) {
+                Text(text = stringResource(R.string.copy), modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp))
+            }
         }
         NaverMap(
             modifier = Modifier
@@ -376,13 +402,14 @@ private fun GuestDetailScreenPreview() {
                 myStatus = UserStatus.NONE,
                 writerInfo = User(nickName = "김동경")
 
-            ), statusLoading = false,
+            ),
+            statusLoading = false,
             modifier = Modifier.fillMaxSize(),
             onRefresh = {},
             navPopBackStack = {},
             onEdit = {},
             onDelete = {},
-            onChatClick = { _, _ , _->},
+            onChatClick = { _, _, _ -> },
         )
     }
 }
