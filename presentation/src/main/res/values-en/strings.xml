@@ -117,5 +117,8 @@
     <string name="uploadimagefail">"Photo upload failed. Please try again "</string>
     <string name="failcreatechatroom">"Chat room creation failed. Please try again. "</string>
     <string name="failsendmessage">"Message delivery failed. Please try again. "</string>
+    <string name="copy">Copy</string>
+    <string name="setheight">Set Height</string>
+    <string name="setweight">Set Weight</string>
 
 </resources>

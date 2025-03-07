@@ -118,5 +118,8 @@
     <string name="uploadimagefail">사진 업로드에 실패했습니다. 다시 시도해 주세요</string>
     <string name="failcreatechatroom">채팅방 생성에 실패했습니다 다시 시도해 주세요</string>
     <string name="failsendmessage">메시지 전송에 실패했습니다 다시 시도해 주세요.</string>
+    <string name="copy">복사</string>
+    <string name="setheight">신장을 설정해 주세요.</string>
+    <string name="setweight">체중을 설정해 주세요.</string>
 
 </resources>
