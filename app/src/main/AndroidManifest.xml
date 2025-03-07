@@ -17,6 +17,7 @@
         <activity
             android:name="com.dkproject.presentation.activity.MainActivity"
             android:exported="true"
+            android:windowSoftInputMode="adjustResize"
             android:label="@string/app_name"
             android:theme="@style/Theme.BasketBallGuest_Android">
             <intent-filter>
