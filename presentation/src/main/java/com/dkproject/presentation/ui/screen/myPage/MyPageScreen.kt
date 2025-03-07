@@ -187,21 +187,12 @@ fun MyPageScreen(
         }
     }
     if (isEditHeight && userData != null) {
-        var selectedHeight by remember { mutableIntStateOf(userData.height ?: 175) }
         ModalBottomSheet(onDismissRequest = { isEditHeight = false }) {
             IntWheelPicker(currentValue = userData.height ?: 175, list = (140..<210).toList(),
-                onValueChange = { height ->
-                    selectedHeight = height
+                onConfirmClick = { height ->
+                    viewModel.updateUserHeight(height)
                     isEditHeight = false
                 })
-            Spacer(modifier = Modifier.height(24.dp))
-            DefaultButton(
-                title = stringResource(R.string.confirm), onClick = {
-                    viewModel.updateUserHeight(selectedHeight)
-                }, modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            )
             Spacer(modifier = Modifier.height(8.dp))
             DefaultButton(
                 title = stringResource(R.string.privateinfo),
@@ -218,21 +209,12 @@ fun MyPageScreen(
     }
 
     if (isEditWeight && userData != null) {
-        var selectedWeight by remember { mutableIntStateOf(userData.height ?: 175) }
         ModalBottomSheet(onDismissRequest = { isEditWeight = false }) {
             IntWheelPicker(currentValue = userData.weight ?: 75, list = (50..120).toList(),
-                onValueChange = { weight ->
-                    selectedWeight = weight
+                onConfirmClick = { weight ->
+                    viewModel.updateUserWeight(weight)
                     isEditWeight = false
                 })
-            Spacer(modifier = Modifier.height(24.dp))
-            DefaultButton(
-                title = stringResource(R.string.confirm), onClick = {
-                    viewModel.updateUserWeight(selectedWeight)
-                }, modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            )
             Spacer(modifier = Modifier.height(8.dp))
             DefaultButton(
                 title = stringResource(R.string.privateinfo),
