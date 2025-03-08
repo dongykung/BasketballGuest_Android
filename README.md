@@ -41,7 +41,7 @@
 ---
 
 ## 주요기능 실행화면
-| 회원가입           | 게스트 구인 작성   | Feature 3          |
+| 회원가입           | 게스트 구인 작성   | 필터링          |
 | ------------------ | ------------------ | ------------------ |
 |  ![회원가입편집 (1)](https://github.com/user-attachments/assets/500fc10a-f405-4481-ab58-a5ddf1b7003e) | ![글작성 편집](https://github.com/user-attachments/assets/b56c6419-4740-4a9a-98ae-fdec90e6017f)| ![필터링 편집](https://github.com/user-attachments/assets/008a863f-2814-4d0b-9869-04ae9b3d9290)|
 | **글 수정 및 삭제**           | **게스트 신청**   | **게스트 관리**          |
