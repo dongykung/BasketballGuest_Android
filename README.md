@@ -29,6 +29,7 @@
 | 항목                        | 버전/세부사항                      |
 |---------------------------|-----------------------------------|
 | **Language**                | Kotlin 2.0.21                     |
+| **Architecture**                | Clean Architecture                    |
 | **UI Framework**             | Jetpack Compose                   |
 | **DI**          | Hilt                              |
 | **db**    | Firestore, Room                         |
@@ -38,3 +39,14 @@
 | **min SDK Version**            | 28                                |
 
 ---
+
+## 주요기능 실행화면
+| 회원가입           | 게스트 구인 작성   | Feature 3          |
+| ------------------ | ------------------ | ------------------ |
+|  ![회원가입편집 (1)](https://github.com/user-attachments/assets/500fc10a-f405-4481-ab58-a5ddf1b7003e) | ![글작성 편집](https://github.com/user-attachments/assets/b56c6419-4740-4a9a-98ae-fdec90e6017f)| ![필터링 편집](https://github.com/user-attachments/assets/008a863f-2814-4d0b-9869-04ae9b3d9290)|
+| **글 수정 및 삭제**           | **게스트 신청**   | **게스트 관리**          |
+| ![글 수정 및 삭제 편집](https://github.com/user-attachments/assets/b9970967-de6c-4758-983d-6c009898ff0d) | ![게스트 신청 편집](https://github.com/user-attachments/assets/70588126-9a9a-495d-b4dd-a286bf9d88c5)| ![게스트 관리편집](https://github.com/user-attachments/assets/d2ae5098-734c-47ed-a644-c4b929a653f7)|
+| **내 신청 관리**           | **채팅**   | **프로필**          |
+| ![내 신청 관리 편집](https://github.com/user-attachments/assets/abd4215e-6228-4feb-91dc-25de64ffbbd5)|![채팅 편집](https://github.com/user-attachments/assets/95b36d40-af37-4562-bbfb-59bf090c609a)| ![프로필 편집](https://github.com/user-attachments/assets/c49e5214-442c-4037-a9c2-d64dd46b0dac)
+ |
+
