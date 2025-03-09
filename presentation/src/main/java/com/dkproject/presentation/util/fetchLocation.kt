@@ -15,6 +15,7 @@ import kotlin.coroutines.resumeWithException
 suspend fun fetchLocation(context: Context): Location =
     suspendCancellableCoroutine { cont ->
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+        Log.d("fetchLocation", "fetchLocation")
         if (ActivityCompat.checkSelfPermission(
                 context,
                 Manifest.permission.ACCESS_FINE_LOCATION
