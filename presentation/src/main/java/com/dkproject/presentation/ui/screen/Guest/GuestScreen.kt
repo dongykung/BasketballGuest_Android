@@ -115,7 +115,6 @@ fun GuestScreen(
                         coroutineScope.launch {
                             try {
                                 val location = fetchLocation(context)
-                                Log.d("myloca", "${location.latitude}")
                                 val coordinate = Coordinate(latitude = location.latitude, longitude = location.longitude)
                                 val currentNearBy = uiState.guestFilter.isNearBy
                                 val newFilter = uiState.guestFilter.copy(
@@ -201,7 +200,9 @@ private fun handleLocationPermission(
                 }
             }
         }
-        PermissionStatus.Granted -> onPermissionGranted()
+        PermissionStatus.Granted -> {
+            onPermissionGranted()
+        }
     }
 }
 
