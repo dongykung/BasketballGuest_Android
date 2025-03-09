@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dkproject.domain.usecase.auth.CheckFirstUserUseCase
+import com.dkproject.domain.usecase.auth.SetFcmTokenUseCase
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +17,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SplashViewModel @Inject constructor(
-    val checkFirstUserUseCase: CheckFirstUserUseCase
+    val checkFirstUserUseCase: CheckFirstUserUseCase,
+    private val setFcmTokenUseCase: SetFcmTokenUseCase
+
 ): ViewModel() {
     private val _uiState: MutableStateFlow<AuthState> = MutableStateFlow(AuthState.Loading)
     val uiState: StateFlow<AuthState> = _uiState.asStateFlow()
@@ -28,8 +31,14 @@ class SplashViewModel @Inject constructor(
     private fun checkUserAuthentication() {
         val myUid = Firebase.auth.currentUser?.uid
         viewModelScope.launch {
+
             if (checkFirstUserUseCase(uid = myUid ?: "")) {
-                _uiState.update { AuthState.Authenticated }
+                try {
+                    setFcmTokenUseCase(myUid ?: "")
+                    _uiState.update { AuthState.Authenticated }
+                } catch (e: Exception) {
+                    _uiState.update { AuthState.Unauthenticated }
+                }
             } else {
                 _uiState.update { AuthState.Unauthenticated }
             }
