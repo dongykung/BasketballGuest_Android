@@ -109,7 +109,7 @@ fun ChatRoomItem(
                     )
                 }
                 Spacer(modifier = Modifier.width(16.dp))
-                Column(verticalArrangement = Arrangement.Center) {
+                Column(verticalArrangement = Arrangement.Center, modifier = Modifier.weight(10f)) {
                     Text(text = otherUserInfo.nickname, style = MaterialTheme.typography.titleSmall)
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(
@@ -125,7 +125,8 @@ fun ChatRoomItem(
                     Text(
                         text = chatRoom.lastMessageAt.toFormattedChatRoomDate(),
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
+                        color = Color.Gray,
+                        maxLines = 1,
                     )
                     Spacer(modifier = Modifier.height(6.dp))
                     val unReadCount = chatRoom.unReadCount[myUid] ?: 0
@@ -162,7 +163,7 @@ private fun PreviewChatRoomItem() {
                 ChatRoomItem(
                     chatRoom = ChatRoom(
                         id = "",
-                        lastMessage = "안녕하세요",
+                        lastMessage = "안녕하세요 3.28 게스트 농구 신청 보내셨쬬?",
                         lastMessageAt = Date(),
                         participant = listOf("a", "b"),
                         readStatus = mapOf("a" to Date(), "b" to Date()),
