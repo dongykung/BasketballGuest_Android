@@ -47,7 +47,10 @@ android {
 fun getApiKey(propertyKey:String):String{
     return gradleLocalProperties(rootDir, providers).getProperty(propertyKey)
 }
-
+composeCompiler {
+    reportsDestination = layout.buildDirectory.dir("compose_compiler")
+    metricsDestination = layout.buildDirectory.dir("compose_compiler")
+}
 
 dependencies {
 
