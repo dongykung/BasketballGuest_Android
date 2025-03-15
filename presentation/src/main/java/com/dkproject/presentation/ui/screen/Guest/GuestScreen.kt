@@ -239,7 +239,7 @@ fun GuestPostsContent(
                     onRefresh = onRefresh
                 ) {
                     LazyColumn(modifier = modifier) {
-                        items(postLists.itemCount) { index ->
+                        items(postLists.itemCount, key = { it }) { index ->
                             postLists[index]?.let { guestPost ->
                                 GuestListItem(
                                     guestPostUiModel = guestPost,
