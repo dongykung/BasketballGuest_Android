@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dkproject.domain.model.DataState
-import com.dkproject.domain.model.UnitResult
 import com.dkproject.domain.model.User.User
 import com.dkproject.domain.usecase.File.UploadProfileImageUseCase
 import com.dkproject.domain.usecase.auth.CheckNicknameUseCase
@@ -57,7 +56,7 @@ class MyPageViewModel @Inject constructor(
         viewModelScope.launch {
             val myUid = getCurrentUserId() ?: return@launch
             try {
-                val result = getUserDataUseCase(userUid = myUid)
+                val result = getUserDataUseCase(userUid = myUid).getOrThrow()
                 _uiState.update { it.copy(dataState = DataState.Success(result), isUpdateLoading = false) }
             } catch (e: Exception) {
                 _uiState.update { it.copy(dataState = DataState.Error(e.message.toString()), isUpdateLoading = false) }
@@ -72,13 +71,13 @@ class MyPageViewModel @Inject constructor(
             try {
                 val result = checkNicknameUseCase(nickName = name).getOrThrow()
                 if(result) {
-                    when(updateUserNicknameUseCase(userUid = myUid, nickname = name)) {
-                        is UnitResult.Error -> { throw Exception() }
-                        UnitResult.Success -> {
+                    updateUserNicknameUseCase(userUid = myUid, nickname = name).fold(
+                        onSuccess = {
                             _uiEvent.emit(MyPageUiEvent.CompleteChangeNickname)
                             loadMyData()
-                        }
-                    }
+                        },
+                        onFailure = { throw Exception() }
+                    )
                 } else {
                     _uiState.update { it.copy(isUpdateLoading = false) }
                     _uiEvent.emit(MyPageUiEvent.ShowToast(resourceProvider.getString(R.string.existnickname)))
@@ -96,12 +95,10 @@ class MyPageViewModel @Inject constructor(
             _uiState.update { it.copy(isUpdateLoading = true) }
             try {
                 val downloadUrl = uploadProfileImageUseCase(uid = myUid, photoUri = imageUri)
-                when(updateUserProfileImageUseCase(userUid = myUid, photoUri = downloadUrl)) {
-                    is UnitResult.Error -> {
-                        errorHandling(resourceProvider.getString(R.string.uploadimagefail))
-                    }
-                    UnitResult.Success -> loadMyData()
-                }
+                updateUserProfileImageUseCase(userUid = myUid, photoUri = downloadUrl).fold(
+                    onSuccess = { loadMyData() },
+                    onFailure = { errorHandling(resourceProvider.getString(R.string.uploadimagefail)) }
+                )
             } catch (e: FileNotFoundException) {
                 errorHandling(resourceProvider.getString(R.string.filenotfound))
             } catch (e: Exception) {
@@ -115,12 +112,11 @@ class MyPageViewModel @Inject constructor(
         viewModelScope.launch {
             val myUid = getCurrentUserId() ?: return@launch
             _uiState.update { it.copy(isUpdateLoading = true) }
-            when(updateUserPositionUseCase(userUid = myUid, position = position)) {
-                is UnitResult.Error -> {
-                    errorHandling(resourceProvider.getString(R.string.defaulterror))
-                }
-                UnitResult.Success -> loadMyData()
-            }
+          updateUserPositionUseCase(userUid = myUid, position = position).fold(
+              onSuccess = { loadMyData() },
+              onFailure = { errorHandling(resourceProvider.getString(R.string.defaulterror))
+              }
+          )
         }
     }
 
@@ -128,12 +124,10 @@ class MyPageViewModel @Inject constructor(
         viewModelScope.launch {
             val myUid = getCurrentUserId() ?: return@launch
             _uiState.update { it.copy(isUpdateLoading = true) }
-            when(updateUserHeightUseCase(userUid = myUid, height = height)) {
-                is UnitResult.Error -> {
-                    errorHandling(resourceProvider.getString(R.string.defaulterror))
-                }
-                UnitResult.Success -> loadMyData()
-            }
+            updateUserHeightUseCase(userUid = myUid, height = height).fold(
+                onSuccess = { loadMyData() },
+                onFailure = { errorHandling(resourceProvider.getString(R.string.defaulterror))}
+            )
         }
     }
 
@@ -141,12 +135,10 @@ class MyPageViewModel @Inject constructor(
         viewModelScope.launch {
             val myUid = getCurrentUserId() ?: return@launch
             _uiState.update { it.copy(isUpdateLoading = true) }
-            when(updateUserWeightUseCase(userUid = myUid, weight = weight)) {
-                is UnitResult.Error -> {
-                    errorHandling(resourceProvider.getString(R.string.defaulterror))
-                }
-                UnitResult.Success -> loadMyData()
-            }
+            updateUserWeightUseCase(userUid = myUid, weight = weight).fold(
+                onSuccess = { loadMyData() },
+                onFailure = { errorHandling(resourceProvider.getString(R.string.defaulterror))}
+            )
         }
     }
 

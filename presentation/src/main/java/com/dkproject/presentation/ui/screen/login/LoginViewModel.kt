@@ -31,17 +31,23 @@ class LoginViewModel @Inject constructor(
     fun signInWithGoogle() {
         _uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch {
-            when (val result = googleAuthClient.signIn()) {
-                is SignInResult.Failure -> {
-                    _uiEvent.emit(LoginUiEvent.ShowSnackbar(result.errorMessage))
-                }
-                is SignInResult.Success -> {
-                    if (checkFirstUserUseCase(result.userUid)) {
-                        _uiEvent.emit(LoginUiEvent.MoveToHome)
-                    } else {
-                        _uiEvent.emit(LoginUiEvent.MoveToSignUp)
+            try {
+                when (val result = googleAuthClient.signIn()) {
+
+                    is SignInResult.Failure -> {
+                        _uiEvent.emit(LoginUiEvent.ShowSnackbar(result.errorMessage))
+                    }
+
+                    is SignInResult.Success -> {
+                        if (checkFirstUserUseCase(result.userUid).getOrThrow()) {
+                            _uiEvent.emit(LoginUiEvent.MoveToHome)
+                        } else {
+                            _uiEvent.emit(LoginUiEvent.MoveToSignUp)
+                        }
                     }
                 }
+            } catch (e: Throwable) {
+                _uiEvent.emit(LoginUiEvent.ShowSnackbar("로그인에 실패했습니다 다시 시도해 주세요."))
             }
             _uiState.update { it.copy(isLoading = false) }
         }
@@ -50,19 +56,24 @@ class LoginViewModel @Inject constructor(
     fun signWitnKakako() {
         _uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch {
-            when (val result = kakaoAuthClient.signInWithKakao()) {
-                is SignInResult.Failure -> {
-                    _uiEvent.emit(LoginUiEvent.ShowSnackbar(result.errorMessage))
-                    Log.d("LoginViewModel", result.errorMessage)
+            try {
+                when (val result = kakaoAuthClient.signInWithKakao()) {
+                    is SignInResult.Failure -> {
+                        _uiEvent.emit(LoginUiEvent.ShowSnackbar(result.errorMessage))
+                        Log.d("LoginViewModel", result.errorMessage)
 
-                }
-                is SignInResult.Success -> {
-                    if (checkFirstUserUseCase(result.userUid)) {
-                        _uiEvent.emit(LoginUiEvent.MoveToHome)
-                    } else {
-                        _uiEvent.emit(LoginUiEvent.MoveToSignUp)
+                    }
+
+                    is SignInResult.Success -> {
+                        if (checkFirstUserUseCase(result.userUid).getOrThrow()) {
+                            _uiEvent.emit(LoginUiEvent.MoveToHome)
+                        } else {
+                            _uiEvent.emit(LoginUiEvent.MoveToSignUp)
+                        }
                     }
                 }
+            } catch (e: Throwable) {
+                _uiEvent.emit(LoginUiEvent.ShowSnackbar("로그인에 실패했습니다 다시 시도해 주세요."))
             }
             _uiState.update { it.copy(isLoading = false) }
         }
