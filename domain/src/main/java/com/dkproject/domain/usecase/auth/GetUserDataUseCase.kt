@@ -6,7 +6,7 @@ import com.dkproject.domain.repository.AuthRepository
 class GetUserDataUseCase(
     private val authRepository: AuthRepository
 ) {
-    suspend operator fun invoke(userUid: String): User {
+    suspend operator fun invoke(userUid: String): Result<User> {
         return authRepository.getUserData(userUid = userUid)
     }
 }

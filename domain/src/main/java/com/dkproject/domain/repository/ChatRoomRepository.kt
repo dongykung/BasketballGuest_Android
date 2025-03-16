@@ -1,7 +1,6 @@
 package com.dkproject.domain.repository
 
 import com.dkproject.domain.model.Chat.ChatRoom
-import com.dkproject.domain.model.UnitResult
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
@@ -11,13 +10,13 @@ interface ChatRoomRepository {
 
     //firestore 부분
     fun listenToChatRooms(myUid: String): Flow<Unit> //파이어 스토어 리스너 걸기
-    suspend fun createChatRoom(chatRoom: ChatRoom): UnitResult
+    suspend fun createChatRoom(chatRoom: ChatRoom): Result<Unit>
     suspend fun updateChatRoomData(
         myUid: String,
         chatRoomId: String,
         lastMessage: String,
         date: Date
-    ): UnitResult
+    ): Result<Unit>
     suspend fun getCountUnReadMessage(uid: String, chatRoomId: String, date: Date): Int
 }
 

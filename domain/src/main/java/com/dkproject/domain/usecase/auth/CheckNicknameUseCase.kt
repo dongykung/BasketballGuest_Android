@@ -9,7 +9,5 @@ class CheckNicknameUseCase(
     private val authRepository: AuthRepository
 ) {
     /// true -> 닉네임 사용 가능
-    suspend operator fun invoke(nickName: String): Result<Boolean> = kotlin.runCatching {
-        authRepository.checkUserNickName(nickName)
-    }
+    suspend operator fun invoke(nickName: String): Result<Boolean> = authRepository.checkUserNickName(nickName)
 }

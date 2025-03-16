@@ -5,7 +5,5 @@ import com.dkproject.domain.repository.GuestRepository
 class DeleteGuestPostUseCase(
     private val guestRepository: GuestRepository
 ) {
-    suspend operator fun invoke(postUid: String): Result<Unit> {
-        return guestRepository.deleteGuestPost(postUid)
-    }
+    suspend operator fun invoke(postUid: String): Result<Unit> = guestRepository.deleteGuestPost(postUid)
 }
