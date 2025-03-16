@@ -6,7 +6,5 @@ import com.dkproject.domain.repository.GuestRepository
 class GetPostUserStatusUseCase(
     private val guestRepository: GuestRepository
 ) {
-    suspend operator fun invoke(postUid: String, userUid: String): UserStatus {
-        return guestRepository.getPostUserStatus(postUid = postUid, userUid = userUid)
-    }
+    suspend operator fun invoke(postUid: String, userUid: String): Result<UserStatus> = guestRepository.getPostUserStatus(postUid = postUid, userUid = userUid)
 }

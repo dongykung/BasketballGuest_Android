@@ -5,7 +5,7 @@ import com.dkproject.domain.repository.AuthRepository
 class DeleteMyParticipantUseCase(
     private val authRepository: AuthRepository
 ) {
-    suspend operator fun invoke(postUid: String, myUid: String) {
+    suspend operator fun invoke(postUid: String, myUid: String): Result<Unit> {
         return authRepository.cancelApplyGuest(postUid = postUid, myUid = myUid)
     }
 }

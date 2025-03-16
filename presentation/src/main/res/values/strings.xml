@@ -121,5 +121,7 @@
     <string name="copy">복사</string>
     <string name="setheight">신장을 설정해 주세요.</string>
     <string name="setweight">체중을 설정해 주세요.</string>
+    <string name="notpermission">권한이 없습니다.</string>
+    <string name="httperror">서버에 문제가 발생했습니다.\\n 관리자에게 문의해주세요.</string>
 
 </resources>

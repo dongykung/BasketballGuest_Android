@@ -32,7 +32,7 @@ class SplashViewModel @Inject constructor(
         val myUid = Firebase.auth.currentUser?.uid
         viewModelScope.launch {
 
-            if (checkFirstUserUseCase(uid = myUid ?: "")) {
+            if (checkFirstUserUseCase(uid = myUid ?: "").getOrElse { false }) {
                 try {
                     setFcmTokenUseCase(myUid ?: "")
                     _uiState.update { AuthState.Authenticated }

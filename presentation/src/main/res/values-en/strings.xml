@@ -120,5 +120,7 @@
     <string name="copy">Copy</string>
     <string name="setheight">Set Height</string>
     <string name="setweight">Set Weight</string>
+    <string name="notpermission">"You do not have permission. "</string>
+    <string name="httperror">A problem has occurred with the server.\\n Please contact the administrator.</string>
 
 </resources>

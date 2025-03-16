@@ -4,9 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.dkproject.domain.Error.ErrorType
+import com.dkproject.domain.Error.DomainError
 import com.dkproject.domain.model.GuestManage.GuestManage
-import com.dkproject.domain.model.UnitResult
 import com.dkproject.domain.model.User.UserStatus
 import com.dkproject.domain.usecase.Guest.AcceptGuestUseCase
 import com.dkproject.domain.usecase.Guest.GetGuestManageListUseCase
@@ -60,14 +59,14 @@ class GuestManageViewModel @Inject constructor(
     fun acceptGuest(postId: String, userId: String) {
         viewModelScope.launch {
             updateIsLoadingState(true)
-            when (val result = acceptGuestUseCase(postUid = postId, userUid = userId)) {
-                is UnitResult.Error -> errorHandling(e = result.errorType)
-                UnitResult.Success -> {
+            acceptGuestUseCase(postUid = postId, userUid = userId).fold(
+                onSuccess = {
                     val changeStatus = uiState.value.changeStatusItems.toMutableMap()
                     changeStatus[userId] = UserStatus.GUEST
                     _uiState.update { it.copy(changeStatusItems = changeStatus, isLoading = false) }
-                }
-            }
+                },
+                onFailure = { errorHandling(it) }
+            )
         }
     }
 
@@ -75,14 +74,14 @@ class GuestManageViewModel @Inject constructor(
     fun rejectGuest(postId: String, userId: String) {
         viewModelScope.launch {
             updateIsLoadingState(true)
-            when (val result = rejectGuestUseCase(postUid = postId, userUid = userId)) {
-                is UnitResult.Error -> errorHandling(e = result.errorType)
-                UnitResult.Success -> {
+            rejectGuestUseCase(postUid = postId, userUid = userId).fold(
+                onSuccess = {
                     val changeStatus = uiState.value.changeStatusItems.toMutableMap()
                     changeStatus[userId] = UserStatus.DENIED
                     _uiState.update { it.copy(changeStatusItems = changeStatus, isLoading = false) }
-                }
-            }
+                },
+                onFailure = { errorHandling(it) }
+            )
         }
     }
 
@@ -102,15 +101,14 @@ class GuestManageViewModel @Inject constructor(
         _uiState.update { it.copy(isLoading = isLoading) }
     }
 
-    private suspend fun errorHandling(e: ErrorType) {
+    private suspend fun errorHandling(e: Throwable) {
         updateIsLoadingState(false)
         when (e) {
-            ErrorType.DOCUMENT_NOT_FOUND -> _uiEvent.emit(
+            is DomainError.DocumentNotFound -> _uiEvent.emit(
                 GuestManageUiEvent.ShowMessage(
                     resourceProvider.getString(R.string.managenotfound)
                 )
             )
-
             else -> _uiEvent.emit(GuestManageUiEvent.ShowMessage(resourceProvider.getString(R.string.failreject)))
         }
     }

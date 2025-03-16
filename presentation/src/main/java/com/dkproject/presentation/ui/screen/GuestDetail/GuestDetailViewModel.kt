@@ -3,6 +3,7 @@ package com.dkproject.presentation.ui.screen.GuestDetail
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dkproject.domain.Error.DomainError
 import com.dkproject.domain.model.DataState
 import com.dkproject.domain.model.User.User
 import com.dkproject.domain.model.User.UserStatus
@@ -70,14 +71,16 @@ class GuestDetailViewModel @Inject constructor(
         viewModelScope.launch(handler) {
             val myUid = getCurrentUserId() ?: return@launch
             val user = async(context = Dispatchers.IO) {
-                getUserDataUseCase(userUid = postDetail.writerUid)
+                getUserDataUseCase(userUid = postDetail.writerUid).getOrThrow()
             }
             val postData = async(context = Dispatchers.IO) {
-                getPostDataUseCase(postUid = postDetail.id ?: "").toUiModel()
+                getPostDataUseCase(postUid = postDetail.id ?: "").getOrThrow().toUiModel()
             }
             val status = async(context = Dispatchers.IO) {
                 if (postDetail.writerUid == myUid) UserStatus.OWNER
-                else getPostUserStatusUseCase(postUid = postDetail.id ?: "", userUid = myUid)
+                else getPostUserStatusUseCase(postUid = postDetail.id ?: "", userUid = myUid).getOrElse {
+                    UserStatus.NONE
+                }
             }
             val result = DataState.Success(
                 PostDetailDataState(
@@ -93,11 +96,10 @@ class GuestDetailViewModel @Inject constructor(
     private fun errorHandling(e: Throwable) {
         viewModelScope.launch {
             when (e) {
-                is NoSuchElementException -> {
+                is DomainError.DocumentNotFound -> {
                     _uiEvent.emit(DetailUiEvent.NoSuchData(resourceProvider.getString(R.string.nosuch)))
                 }
-
-                is IOException, is FirebaseFirestoreException -> {
+                is DomainError.NetworkError -> {
                     _uiState.update {
                         it.copy(
                             dataState = DataState.Error(
@@ -108,7 +110,6 @@ class GuestDetailViewModel @Inject constructor(
                         )
                     }
                 }
-
                 else -> {
                     _uiState.update {
                         it.copy(

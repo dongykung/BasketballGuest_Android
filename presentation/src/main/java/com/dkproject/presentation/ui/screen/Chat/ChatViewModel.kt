@@ -9,7 +9,6 @@ import androidx.paging.cachedIn
 import com.dkproject.domain.model.Chat.Chat
 import com.dkproject.domain.model.Chat.ChatRoom
 import com.dkproject.domain.model.Chat.ChatUserInfo
-import com.dkproject.domain.model.UnitResult
 import com.dkproject.domain.model.User.User
 import com.dkproject.domain.usecase.Chat.CreateChatRoomUseCase
 import com.dkproject.domain.usecase.Chat.GetChatListUseCase
@@ -122,20 +121,21 @@ class ChatViewModel @Inject constructor(
                 _uiState.update { it.copy(chatMessage = "") }
             } else { // 채팅 방 없을 경우 (채팅방 생성 후 메시지 업로드)
                 try {
-                    val myData = getUserDataUseCase(userUid = myUid)
+                    val myData = getUserDataUseCase(userUid = myUid).getOrThrow()
                     val chatRoom = getChatRoom(chat = chat, myData = myData, now = now)
-                    when (createChatRoomUseCase(chatRoom = chatRoom)) {
-                        is UnitResult.Error -> {
-                            _uiEvent.emit(ChatUiEvent.ShowToast(resourceProvider.getString(R.string.failcreatechatroom)))
-                            return@launch
-                        }
-                        UnitResult.Success -> {
+                    val result = createChatRoomUseCase(chatRoom = chatRoom)
+                    result.fold(
+                        onSuccess = {
                             _uiState.update { it.copy(isRoomExist = true) }
                             uploadMessage(myUid = myUid, chatRoomId = chat.chatRoomId, now = now)
                             updateChatRoomData(chatRoomId = chat.chatRoomId, lastMessage = uiState.value.chatMessage, date = now, myUid = myUid)
                             _uiState.update { it.copy(chatMessage = "") }
+                        },
+                        onFailure = {
+                            _uiEvent.emit(ChatUiEvent.ShowToast(resourceProvider.getString(R.string.failcreatechatroom)))
+                            return@launch
                         }
-                    }
+                    )
                 } catch (e: Exception) {
                     errorHandling(e)
                 }
@@ -169,10 +169,10 @@ class ChatViewModel @Inject constructor(
 
     private suspend fun uploadMessage(myUid: String, chatRoomId: String, now: Date) {
         val chat = getChat(myUid = myUid, chatRoomId = chatRoomId, now = now)
-        when (sendMessageUseCase(chatRoomId = chatRoomId, chat = chat)) {
-            is UnitResult.Error -> { _uiEvent.emit(ChatUiEvent.ShowToast(resourceProvider.getString(R.string.failsendmessage))) }
-            UnitResult.Success -> {  }
-        }
+        val result = sendMessageUseCase(chatRoomId = chatRoomId, chat = chat)
+        result.fold(onSuccess = {}, onFailure = {
+            _uiEvent.emit(ChatUiEvent.ShowToast(resourceProvider.getString(R.string.failsendmessage)))
+        })
     }
 
     /**
