@@ -6,26 +6,34 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import androidx.paging.insertHeaderItem
+import androidx.paging.insertSeparators
+import androidx.paging.map
 import com.dkproject.domain.model.Chat.Chat
 import com.dkproject.domain.model.Chat.ChatRoom
 import com.dkproject.domain.model.Chat.ChatUserInfo
+import com.dkproject.domain.model.Guest.GuestFilter
 import com.dkproject.domain.model.User.User
 import com.dkproject.domain.usecase.Chat.CreateChatRoomUseCase
 import com.dkproject.domain.usecase.Chat.GetChatListUseCase
 import com.dkproject.domain.usecase.Chat.GetChatRoomInfoUseCase
 import com.dkproject.domain.usecase.Chat.GetCountUnReadMessageUseCase
+import com.dkproject.domain.usecase.Chat.GetLatestMessageUseCase
 import com.dkproject.domain.usecase.Chat.ListenToChatUseCase
 import com.dkproject.domain.usecase.Chat.SendMessageUseCase
 import com.dkproject.domain.usecase.Chat.UpdateChatRoomInfoUseCase
 import com.dkproject.domain.usecase.auth.GetUserDataUseCase
 import com.dkproject.presentation.R
 import com.dkproject.presentation.di.ResourceProvider
+import com.dkproject.presentation.model.GuestPostUiModel
+import com.dkproject.presentation.model.toUiModel
 import com.dkproject.presentation.navigation.Screen
 import com.dkproject.presentation.ui.screen.ChatRoom.ChatRoomUiEvent
 import com.dkproject.presentation.ui.screen.GuestDetail.DetailUiEvent
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -35,7 +43,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -57,7 +67,8 @@ class ChatViewModel @Inject constructor(
     private val getUserDataUseCase: GetUserDataUseCase,
     private val listenToChatUseCase: ListenToChatUseCase,
     private val sendMessageUseCase: SendMessageUseCase,
-    private val updateChatRoomInfoUseCase: UpdateChatRoomInfoUseCase
+    private val updateChatRoomInfoUseCase: UpdateChatRoomInfoUseCase,
+    private val getLatestMessageUseCase: GetLatestMessageUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<ChatUiState>(ChatUiState())
@@ -66,23 +77,24 @@ class ChatViewModel @Inject constructor(
     private val _uiEvent = MutableSharedFlow<ChatUiEvent>()
     val uiEvent = _uiEvent.asSharedFlow()
 
+
     // 맨 처음 실행되는 함수(room 으로부터 데이터 가져오기 및 파이어스토어 리스너 달기)
     fun getChatList(chatRoomId: String) {
-        getChatListUseCase(chatRoomId = chatRoomId)
 
-        getChatListUseCase(chatRoomId = chatRoomId)
-            .map { chatList -> ChatUiState(chatList = chatList) }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5000),
-                initialValue = ChatUiState()
-            )
-            .onEach { newState ->
-                _uiState.update { it.copy(chatList = newState.chatList) }
+        _uiState.update { it.copy(chatList = buildGuestListFlow(chatRoomId)) }
+        getLatestMessageUseCase(chatRoomId = chatRoomId)
+            .onEach { newChatList ->
+                _uiState.update { it.copy(newChatList = newChatList) }
             }
             .launchIn(viewModelScope)
-        startListeningToChats(chatRoomId = chatRoomId)
-        initializeChatRoom(chatRoomId = chatRoomId)
+        startListeningToChats(chatRoomId)
+        initializeChatRoom(chatRoomId)
+    }
+
+    private fun buildGuestListFlow(chatRoomId: String): Flow<PagingData<Chat>> {
+        return getChatListUseCase(chatRoomId)
+            .flowOn(Dispatchers.IO)
+            .cachedIn(viewModelScope)
     }
 
     // 리스너 달기
@@ -212,7 +224,8 @@ class ChatViewModel @Inject constructor(
 }
 
 data class ChatUiState(
-    val chatList: List<Chat> = listOf(),
+    val newChatList: List<Chat> = emptyList(),
+    val chatList: Flow<PagingData<Chat>> = emptyFlow(),
     val chatMessage: String = "",
     val isRoomExist: Boolean = false,
 )

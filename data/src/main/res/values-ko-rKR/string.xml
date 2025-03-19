@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="networkerror">네트워크 연결에 문제가 있습니다.\n 인터넷 상태를 확인해주세요.</string>
+    <string name="httperror">서버에 문제가 발생했습니다.\n 관리자에게 문의해주세요.</string>
+    <string name="apierror">유효하지 않은 API 키입니다.\n 관리자에게 문의해주세요.</string>
+    <string name="dataerror">데이터 로드에 실패했습니다.\n잠시 후 다시 시도해주세요</string>
+    <string name="nouser">유저가 존재하지 않습니다.</string>
+    <string name="defaulterror">데이터 로드에 실패했습니다. 잠시 후 다시 시도해 주세요</string>
+</resources>

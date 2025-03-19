@@ -9,6 +9,7 @@ import com.dkproject.domain.usecase.Chat.GetChatListUseCase
 import com.dkproject.domain.usecase.Chat.GetChatRoomInfoUseCase
 import com.dkproject.domain.usecase.Chat.GetChatRoomListUseCase
 import com.dkproject.domain.usecase.Chat.GetCountUnReadMessageUseCase
+import com.dkproject.domain.usecase.Chat.GetLatestMessageUseCase
 import com.dkproject.domain.usecase.Chat.ListenToChatRoomUseCase
 import com.dkproject.domain.usecase.Chat.ListenToChatUseCase
 import com.dkproject.domain.usecase.Chat.SendMessageUseCase
@@ -81,5 +82,12 @@ object ProvideChatRoomModule {
     @Singleton
     fun provideUpdateChatRoomInfoUseCase(chatRoomRepository: ChatRoomRepository): UpdateChatRoomInfoUseCase {
         return UpdateChatRoomInfoUseCase(chatRoomRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetLatestMessageUseCase(chatRepository: ChatRepository): GetLatestMessageUseCase {
+        return GetLatestMessageUseCase(chatRepository)
+
     }
 }

@@ -2,6 +2,7 @@ package com.dkproject.data.model
 
 import com.dkproject.domain.model.Chat.Chat
 import com.google.firebase.firestore.DocumentId
+import com.google.firebase.firestore.PropertyName
 import com.google.firebase.firestore.ServerTimestamp
 import java.util.Date
 
@@ -11,6 +12,8 @@ data class ChatDTO(
     var sender: String = "",
     var readBy: List<String> = emptyList(),
     @ServerTimestamp var createAt: Date ?= null,
+    @PropertyName("allRead")
+    var isAllRead: Boolean = false,
 ) {
     fun toChatEntity(chatRoomId: String): ChatEntity {
         return ChatEntity(
@@ -19,7 +22,8 @@ data class ChatDTO(
             message = message,
             sender = sender,
             readBy = readBy,
-            createAt = createAt ?: Date()
+            createAt = createAt ?: Date(),
+            isAllRead = isAllRead
         )
     }
 }
