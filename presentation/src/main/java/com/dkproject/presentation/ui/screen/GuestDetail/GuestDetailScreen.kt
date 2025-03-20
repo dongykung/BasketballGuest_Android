@@ -72,7 +72,6 @@ import com.dkproject.presentation.ui.component.util.ErrorScreen
 import com.dkproject.presentation.ui.component.util.LoadingScreen
 import com.dkproject.presentation.ui.theme.AppTheme
 import com.dkproject.presentation.util.GetUserStatusString
-import com.dkproject.presentation.util.guestPostDummy
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.compose.CameraPositionState
@@ -391,25 +390,3 @@ fun AddressSection(
 }
 
 
-@Composable
-@Preview(showBackground = true)
-private fun GuestDetailScreenPreview() {
-    AppTheme {
-        GuestDetailScreen(
-            guestDetail =
-            PostDetailDataState(
-                postDetail = guestPostDummy,
-                myStatus = UserStatus.NONE,
-                writerInfo = User(nickName = "김동경")
-
-            ),
-            statusLoading = false,
-            modifier = Modifier.fillMaxSize(),
-            onRefresh = {},
-            navPopBackStack = {},
-            onEdit = {},
-            onDelete = {},
-            onChatClick = { _, _, _ -> },
-        )
-    }
-}

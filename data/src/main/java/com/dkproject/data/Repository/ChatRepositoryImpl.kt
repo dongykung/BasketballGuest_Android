@@ -32,8 +32,11 @@ class ChatRepositoryImpl @Inject constructor(
     private val chatDao: ChatDao,
     private val firestore: FirebaseFirestore,
 ): ChatRepository {
-    override fun getChatsByChatRoomId(chatRoomId: String): Flow<List<Chat>> {
-        return chatDao.getChatsByChatRoomId(chatRoomId = chatRoomId)
+    override fun getChatsByChatRoomId(chatRoomId: String): Flow<PagingData<Chat>> {
+        return Pager(
+            config = PagingConfig(pageSize = 20, initialLoadSize = 20, enablePlaceholders = false, prefetchDistance = 2),
+            pagingSourceFactory = { chatDao.getChatsByChatRoomId(chatRoomId = chatRoomId) }
+        ).flow
             .map { list -> list.map { it.toDomain() } }
             .flowOn(context = Dispatchers.IO)
     }

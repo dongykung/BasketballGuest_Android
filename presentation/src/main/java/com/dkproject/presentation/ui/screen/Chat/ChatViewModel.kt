@@ -35,6 +35,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.cache
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.launchIn
@@ -69,21 +70,14 @@ class ChatViewModel @Inject constructor(
 
     // 맨 처음 실행되는 함수(room 으로부터 데이터 가져오기 및 파이어스토어 리스너 달기)
     fun getChatList(chatRoomId: String) {
-        getChatListUseCase(chatRoomId = chatRoomId)
-
-        getChatListUseCase(chatRoomId = chatRoomId)
-            .map { chatList -> ChatUiState(chatList = chatList) }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5000),
-                initialValue = ChatUiState()
-            )
-            .onEach { newState ->
-                _uiState.update { it.copy(chatList = newState.chatList) }
-            }
-            .launchIn(viewModelScope)
+        _uiState.update { it.copy(chatList = buildChatListFlow(chatRoomId)) }
         startListeningToChats(chatRoomId = chatRoomId)
         initializeChatRoom(chatRoomId = chatRoomId)
+    }
+
+    private fun buildChatListFlow(chatRoomId: String): Flow<PagingData<Chat>> {
+        return getChatListUseCase(chatRoomId)
+            .cachedIn(viewModelScope)
     }
 
     // 리스너 달기
@@ -212,7 +206,7 @@ class ChatViewModel @Inject constructor(
 }
 
 data class ChatUiState(
-    val chatList: List<Chat> = listOf(),
+    val chatList: Flow<PagingData<Chat>> = emptyFlow(),
     val chatMessage: String = "",
     val isRoomExist: Boolean = false,
 )

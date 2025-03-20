@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.Flow
 interface ChatDao {
 
     @Query("SELECT * FROM Chat WHERE chatRoomId = :chatRoomId ORDER BY createAt DESC")
-    fun getChatsByChatRoomId(chatRoomId: String): Flow<List<ChatEntity>>
+    fun getChatsByChatRoomId(chatRoomId: String): PagingSource<Int, ChatEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertChat(chat: ChatEntity)

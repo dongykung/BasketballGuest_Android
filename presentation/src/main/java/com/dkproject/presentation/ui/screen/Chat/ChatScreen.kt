@@ -1,5 +1,6 @@
 package com.dkproject.presentation.ui.screen.Chat
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -30,12 +32,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.paging.compose.LazyPagingItems
 import com.dkproject.domain.model.Chat.Chat
 import com.dkproject.presentation.extension.toFormattedHourAndMinute
 import com.dkproject.presentation.extension.toFormattedfullString
@@ -55,7 +60,7 @@ fun ChatScreen(
     onBackClick: () -> Unit,
     onSendClick: () -> Unit,
     updateChatMessage: (String) -> Unit,
-    chatList: List<Chat>,
+    chatList: LazyPagingItems<Chat>,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -114,23 +119,28 @@ fun ChatScreen(
 
 @Composable
 fun ChatList(
-    chatList: List<Chat>,
+    chatList: LazyPagingItems<Chat>,
     otherUserUid: String,
     modifier: Modifier = Modifier
 ) {
-    val groupedChats = chatList.groupBy { chat ->
-        // 날짜별로 그룹화: 하루의 시작 시각으로 계산
-        Calendar.getInstance().apply {
-            time = chat.createAt
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }.time
+//    val groupedChats = chatList.groupBy { chat ->
+//        // 날짜별로 그룹화: 하루의 시작 시각으로 계산
+//        Calendar.getInstance().apply {
+//            time = chat.createAt
+//            set(Calendar.HOUR_OF_DAY, 0)
+//            set(Calendar.MINUTE, 0)
+//            set(Calendar.SECOND, 0)
+//            set(Calendar.MILLISECOND, 0)
+//        }.time
+//    }
+    val listState = rememberLazyListState()
+    LaunchedEffect(chatList.itemCount) {
+        Log.d("ChatList", "ChatList: ${chatList.itemCount}")
+        listState.animateScrollToItem(0)
     }
-    LazyColumn(modifier = modifier, reverseLayout = true) {
-        groupedChats.forEach { (date, chats) ->
-            items(chats.sortedByDescending { it.createAt }) { chat ->
+    LazyColumn(modifier = modifier, reverseLayout = true, state = listState) {
+            items(chatList.itemCount, key = { chatList.peek(it)?.id ?: it }) {
+                val chat = chatList[it] ?: return@items
                 if(chat.sender == otherUserUid) {
                     OtherUserChat(chat = chat, modifier = Modifier
                         .fillMaxWidth()
@@ -141,19 +151,6 @@ fun ChatList(
                         .padding(horizontal = 6.dp, vertical = 8.dp))
                 }
             }
-            item {
-                Row(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp), horizontalArrangement = Arrangement.Center) {
-                    Surface(shape = RoundedCornerShape(16.dp), color = Color.LightGray) {
-                        Text(text = date.toFormattedfullString(),
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                        )
-                    }
-                }
-            }
-        }
     }
 }
 

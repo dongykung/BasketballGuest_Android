@@ -53,6 +53,7 @@ fun NavGraphBuilder.chatNavGraph(
         val chat: Screen.Chat = backStackEntry.toRoute()
         val viewModel: ChatViewModel = hiltViewModel()
         val uiState by viewModel.uiState.collectAsState()
+        val chatList = uiState.chatList.collectAsLazyPagingItems()
         LaunchedEffect(chat) {
             viewModel.getChatList(chatRoomId = chat.chatRoomId)
         }
@@ -71,7 +72,7 @@ fun NavGraphBuilder.chatNavGraph(
             otherUserNickname = chat.otherUserName,
             otherUserProfile = chat.otherProfileUrl,
             onBackClick = { navController.popBackStack() },
-            chatList = uiState.chatList,
+            chatList = chatList,
             chatMessage = uiState.chatMessage,
             onSendClick = {
                 viewModel.sendMessage(chat)

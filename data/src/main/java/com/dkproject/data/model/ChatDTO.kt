@@ -11,6 +11,7 @@ data class ChatDTO(
     var sender: String = "",
     var readBy: List<String> = emptyList(),
     @ServerTimestamp var createAt: Date ?= null,
+    var allRead:Boolean = false
 ) {
     fun toChatEntity(chatRoomId: String): ChatEntity {
         return ChatEntity(
@@ -19,7 +20,8 @@ data class ChatDTO(
             message = message,
             sender = sender,
             readBy = readBy,
-            createAt = createAt ?: Date()
+            createAt = createAt ?: Date(),
+            isAllRead = allRead
         )
     }
 }

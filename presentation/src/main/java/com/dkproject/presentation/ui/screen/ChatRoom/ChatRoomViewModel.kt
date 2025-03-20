@@ -35,7 +35,7 @@ class ChatRoomViewModel @Inject constructor(
     val chatRoomList: StateFlow<List<ChatRoom>> = getChatRoomListUseCase()
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
+            started = SharingStarted.Lazily,
             initialValue = emptyList()
         )
 
