@@ -28,7 +28,7 @@ class ChatPagingSource @Inject constructor(
         Log.d("ChatPagingSource", "pageNumber: ${page}")
         return try {
             val chats = withContext(context = Dispatchers.IO) {
-                dao.getChatsByChatRoomId(chatRoomId = chatRoomId, loadSize = loadSize, index = page).map {
+                dao.getChatsByChatRoomId(chatRoomId = chatRoomId, loadSize = loadSize, index = page, date = date).map {
                     it.toDomain()
                 }
             }

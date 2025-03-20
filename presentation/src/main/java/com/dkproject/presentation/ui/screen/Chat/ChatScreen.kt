@@ -1,5 +1,6 @@
 package com.dkproject.presentation.ui.screen.Chat
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,6 +35,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -65,10 +69,20 @@ fun ChatScreen(
     onBackClick: () -> Unit,
     onSendClick: () -> Unit,
     updateChatMessage: (String) -> Unit,
+    fetchedLastMessages: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var hasUpdatedLastFetched by rememberSaveable { mutableStateOf(false) }
     val uiState by viewModel.uiState.collectAsState()
     val chatList = uiState.chatList.collectAsLazyPagingItems()
+    LaunchedEffect(chatList.loadState.refresh) {
+        if (chatList.loadState.refresh is LoadState.NotLoading&&!hasUpdatedLastFetched) {
+            hasUpdatedLastFetched = true
+            val lastFetched = chatList.peek(0)?.createAt?.time ?: 0L
+            fetchedLastMessages(lastFetched)
+            Log.d("dk", "$lastFetched")
+        }
+    }
     Column(modifier = modifier) {
         CenterAlignedTopAppBar(title = {
             ChatTopAppBar(
@@ -144,22 +158,22 @@ fun ChatList(
         listState.animateScrollToItem(0)
     }
     LazyColumn(modifier = modifier, reverseLayout = true, state = listState) {
-//        items(newChatList, key = { it.id!! }) { chat ->
-//            if (chat.sender == otherUserUid) {
-//                OtherUserChat(
-//                    chat = chat, modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(horizontal = 6.dp, vertical = 8.dp)
-//                )
-//            } else {
-//                MyChat(
-//                    chat = chat, otherUserUid = otherUserUid, modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(horizontal = 6.dp, vertical = 8.dp)
-//                )
-//            }
-//        }
-        items(chatList.itemCount, key = { chatList.peek(it)?.id ?: it }) {
+        items(newChatList, key = { it.id!! }) { chat ->
+            if (chat.sender == otherUserUid) {
+                OtherUserChat(
+                    chat = chat, modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 6.dp, vertical = 8.dp)
+                )
+            } else {
+                MyChat(
+                    chat = chat, otherUserUid = otherUserUid, modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 6.dp, vertical = 8.dp)
+                )
+            }
+        }
+        items(chatList.itemCount, key = { chatList[it]?.id ?: it }) {
             val chat = chatList[it] ?: return@items
             if (chat.sender == otherUserUid) {
                 OtherUserChat(

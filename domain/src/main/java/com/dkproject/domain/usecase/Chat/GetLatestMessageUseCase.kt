@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 class GetLatestMessageUseCase(
     private val chatRepository: ChatRepository
 )  {
-   operator fun invoke(chatRoomId: String): Flow<List<Chat>> {
-       return chatRepository.getLatestMessageFlow(chatRoomId = chatRoomId)
+   operator fun invoke(chatRoomId: String, lastFetched: Long): Flow<List<Chat>> {
+       return chatRepository.getLatestMessageFlow(chatRoomId = chatRoomId, lastFetched = lastFetched)
    }
 }

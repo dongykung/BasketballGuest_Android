@@ -1,5 +1,6 @@
 package com.dkproject.presentation.ui.screen.Chat
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -80,15 +81,18 @@ class ChatViewModel @Inject constructor(
 
     // 맨 처음 실행되는 함수(room 으로부터 데이터 가져오기 및 파이어스토어 리스너 달기)
     fun getChatList(chatRoomId: String) {
-
         _uiState.update { it.copy(chatList = buildGuestListFlow(chatRoomId)) }
-        getLatestMessageUseCase(chatRoomId = chatRoomId)
+        initializeChatRoom(chatRoomId)
+    }
+
+    fun getLatestMessage(chatRoomId: String, lastFetched: Long) {
+        startListeningToChats(chatRoomId) // 페이징 보다 서버에서 데이터가 먼저 들어올 수도 있는 경우 때문에 페이징이 된 후 리스너 요청
+        getLatestMessageUseCase(chatRoomId = chatRoomId, lastFetched = lastFetched)
             .onEach { newChatList ->
+                Log.d("newChat", "newChatList: $newChatList")
                 _uiState.update { it.copy(newChatList = newChatList) }
             }
             .launchIn(viewModelScope)
-        startListeningToChats(chatRoomId)
-        initializeChatRoom(chatRoomId)
     }
 
     private fun buildGuestListFlow(chatRoomId: String): Flow<PagingData<Chat>> {

@@ -99,8 +99,8 @@ class ChatRepositoryImpl @Inject constructor(
             Unit
         }.mapDomainError()
 
-    override fun getLatestMessageFlow(chatRoomId: String): Flow<List<Chat>> {
-        return chatDao.getLatestMessageFlow(chatRoomId)
+    override fun getLatestMessageFlow(chatRoomId: String, lastFetched: Long): Flow<List<Chat>> {
+        return chatDao.getLatestMessageFlow(chatRoomId, lastFetched = lastFetched)
             .map { list -> list.map { it.toDomain() } }
             .flowOn(context = Dispatchers.IO)
     }

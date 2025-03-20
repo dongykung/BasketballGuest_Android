@@ -77,6 +77,9 @@ fun NavGraphBuilder.chatNavGraph(
                 viewModel.sendMessage(chat)
             },
             updateChatMessage = viewModel::updateChatMessage,
+            fetchedLastMessages = { lastFetched ->
+                viewModel.getLatestMessage(chatRoomId = chat.chatRoomId, lastFetched = lastFetched)
+            },
             modifier = Modifier.fillMaxSize()
         )
     }

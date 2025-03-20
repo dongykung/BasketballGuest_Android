@@ -14,8 +14,8 @@ import java.util.Date
 @Dao
 interface ChatDao {
     // 키셋 페이징: createAt를 기준으로 쿼리하는 키셋 페이징 방식
-    @Query("SELECT * FROM Chat WHERE chatRoomId = :chatRoomId ORDER BY createAt DESC LIMIT :loadSize OFFSET (:index * :loadSize)")
-    fun getChatsByChatRoomId(chatRoomId: String, loadSize: Int = 20, index: Int): List<ChatEntity>
+    @Query("SELECT * FROM Chat WHERE chatRoomId = :chatRoomId AND createAt < :date ORDER BY createAt DESC LIMIT :loadSize OFFSET (:index * :loadSize)")
+    fun getChatsByChatRoomId(chatRoomId: String, loadSize: Int = 20, index: Int, date: Long): List<ChatEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertChat(chat: ChatEntity)
@@ -27,5 +27,5 @@ interface ChatDao {
     suspend fun deleteChat(chat: ChatEntity)
 
     @Query("SELECT * FROM Chat WHERE chatRoomId = :chatRoomId AND createAt > :lastFetched ORDER BY createAt DESC")
-    fun getLatestMessageFlow(chatRoomId: String, lastFetched: Long = Date().time): Flow<List<ChatEntity>>
+    fun getLatestMessageFlow(chatRoomId: String, lastFetched: Long): Flow<List<ChatEntity>>
 }
