@@ -25,13 +25,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dkproject.presentation.R
 import com.dkproject.presentation.model.Position
+import com.dkproject.presentation.util.collectOnStarted
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUpScreen(
     uiState: SignUpViewState,
-    uiEvent: SharedFlow<SignUpUiEvent>,
+    uiEvent: Flow<SignUpUiEvent>,
     snackbarHostState: SnackbarHostState,
     onBackClick: () -> Unit,
     onNextStep: () -> Unit,
@@ -44,22 +46,26 @@ fun SignUpScreen(
 ) {
     val progressValue by animateFloatAsState(targetValue = uiState.currentStep.progress, label = "")
 
-    LaunchedEffect(uiEvent) {
-        uiEvent.collect { event ->
-            when (event) {
-                is SignUpUiEvent.ShowSnackbar -> {
-                    snackbarHostState.showSnackbar(event.message)
-                }
-                is SignUpUiEvent.MoveToHome -> {
-                    moveToHome()
-                }
+    uiEvent.collectOnStarted { event ->
+        when (event) {
+            is SignUpUiEvent.ShowSnackbar -> {
+                snackbarHostState.showSnackbar(event.message)
+            }
+
+            is SignUpUiEvent.MoveToHome -> {
+                moveToHome()
             }
         }
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
         CenterAlignedTopAppBar(
-            title = { Text(stringResource(uiState.currentStep.title), style = MaterialTheme.typography.titleMedium) },
+            title = {
+                Text(
+                    stringResource(uiState.currentStep.title),
+                    style = MaterialTheme.typography.titleMedium
+                )
+            },
             navigationIcon = {
                 IconButton(onClick = onBackClick) {
                     Icon(

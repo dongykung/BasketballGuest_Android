@@ -27,11 +27,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -55,8 +57,8 @@ class GuestDetailViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(PostDetailUiState())
     val uiState: StateFlow<PostDetailUiState> = _uiState.asStateFlow()
 
-    private val _uiEvent = MutableSharedFlow<DetailUiEvent>()
-    val uiEvent = _uiEvent.asSharedFlow()
+    private val _uiEvent = Channel<DetailUiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
 
     init {
         Log.d("GuestDetailViewModel", "init")
@@ -69,6 +71,7 @@ class GuestDetailViewModel @Inject constructor(
         _uiState.update { it.copy(dataState = DataState.Loading) }
 
         viewModelScope.launch(handler) {
+            val startTime = System.currentTimeMillis()
             val myUid = getCurrentUserId() ?: return@launch
             val user = async(context = Dispatchers.IO) {
                 getUserDataUseCase(userUid = postDetail.writerUid).getOrThrow()
@@ -89,6 +92,7 @@ class GuestDetailViewModel @Inject constructor(
                     myStatus = status.await()
                 )
             )
+            Log.d("GuestDetailViewModel", "getElapsedTime : ${getElapsedTime(startTime)}")
             _uiState.update { it.copy(dataState = result) }
         }
     }
@@ -97,7 +101,7 @@ class GuestDetailViewModel @Inject constructor(
         viewModelScope.launch {
             when (e) {
                 is DomainError.DocumentNotFound -> {
-                    _uiEvent.emit(DetailUiEvent.NoSuchData(resourceProvider.getString(R.string.nosuch)))
+                    _uiEvent.send(DetailUiEvent.NoSuchData(resourceProvider.getString(R.string.nosuch)))
                 }
                 is DomainError.NetworkError -> {
                     _uiState.update {
@@ -127,7 +131,7 @@ class GuestDetailViewModel @Inject constructor(
 
     fun applyButton(userStatus: UserStatus) {
         when (userStatus) {
-            UserStatus.OWNER -> viewModelScope.launch { _uiEvent.emit(DetailUiEvent.ManageGuest) }
+            UserStatus.OWNER -> viewModelScope.launch { _uiEvent.send(DetailUiEvent.ManageGuest) }
             UserStatus.GUEST -> {}
             UserStatus.DENIED -> {}
             UserStatus.APPLY -> cancelGuest()
@@ -146,7 +150,7 @@ class GuestDetailViewModel @Inject constructor(
                     applyGuestUseCase(postUid = postDetail.postDetail.id ?: "", userUid = myUid)
                     setMyApplyGuestUseCase(myUid = myUid, postUid = postDetail.postDetail.id ?: "")
                 }
-                _uiEvent.emit(DetailUiEvent.ShowSnackbar(resourceProvider.getString(R.string.completeapply)))
+                _uiEvent.send(DetailUiEvent.ShowSnackbar(resourceProvider.getString(R.string.completeapply)))
                 _uiState.update {
                     it.copy(
                         dataState = DataState.Success(postDetail.copy(myStatus = UserStatus.APPLY)),
@@ -154,7 +158,7 @@ class GuestDetailViewModel @Inject constructor(
                     )
                 }
             } catch (e: Exception) {
-                _uiEvent.emit(DetailUiEvent.ShowSnackbar(resourceProvider.getString(R.string.failapply)))
+                _uiEvent.send(DetailUiEvent.ShowSnackbar(resourceProvider.getString(R.string.failapply)))
                 setStatusLoading(false)
             }
         }
@@ -174,7 +178,7 @@ class GuestDetailViewModel @Inject constructor(
                         postUid = postDetail.postDetail.id ?: ""
                     )
                 }
-                _uiEvent.emit(DetailUiEvent.ShowSnackbar(resourceProvider.getString(R.string.completecancel)))
+                _uiEvent.send(DetailUiEvent.ShowSnackbar(resourceProvider.getString(R.string.completecancel)))
                 _uiState.update {
                     it.copy(
                         dataState = DataState.Success(postDetail.copy(myStatus = UserStatus.NONE)),
@@ -182,7 +186,7 @@ class GuestDetailViewModel @Inject constructor(
                     )
                 }
             } catch (e: Exception) {
-                _uiEvent.emit(DetailUiEvent.ShowSnackbar(resourceProvider.getString(R.string.failcancel)))
+                _uiEvent.send(DetailUiEvent.ShowSnackbar(resourceProvider.getString(R.string.failcancel)))
                 setStatusLoading(false)
             }
         }
@@ -194,17 +198,17 @@ class GuestDetailViewModel @Inject constructor(
             val postData = getPostDetailData() ?: return@launch
             val result = deleteGuestPostUseCase(postData.postDetail.id ?: "")
             result.fold(onSuccess = {
-                _uiEvent.emit(DetailUiEvent.PopBackStack)
+                _uiEvent.send(DetailUiEvent.PopBackStack)
             }, onFailure = {
                 _uiState.update { it.copy(isDeleteLoading = false) }
-                _uiEvent.emit(DetailUiEvent.ShowSnackbar(resourceProvider.getString(R.string.faildeletepost)))
+                _uiEvent.send(DetailUiEvent.ShowSnackbar(resourceProvider.getString(R.string.faildeletepost)))
             })
         }
     }
 
     private suspend fun getCurrentUserId(): String? {
         return auth.currentUser?.uid ?: run {
-            _uiEvent.emit(DetailUiEvent.LoseLoginInfo)
+            _uiEvent.send(DetailUiEvent.LoseLoginInfo)
             null
         }
     }
@@ -213,7 +217,7 @@ class GuestDetailViewModel @Inject constructor(
         return when (val currentState = uiState.value.dataState) {
             is DataState.Success -> currentState.data
             else -> {
-                _uiEvent.emit(DetailUiEvent.ShowSnackbar("포스트 정보가 유효하지 않습니다."))
+                _uiEvent.send(DetailUiEvent.ShowSnackbar("포스트 정보가 유효하지 않습니다."))
                 null
             }
         }
@@ -223,7 +227,7 @@ class GuestDetailViewModel @Inject constructor(
         viewModelScope.launch {
             val myUid = getCurrentUserId() ?: return@launch
             val chatRoomId = generateChatRoomId(uid1 = myUid, uid2 = otherUserUid)
-            _uiEvent.emit(
+            _uiEvent.send(
                 DetailUiEvent.NavigateChat(
                     Screen.Chat(
                         chatRoomId = chatRoomId,
@@ -244,6 +248,8 @@ class GuestDetailViewModel @Inject constructor(
         super.onCleared()
         Log.d("GuestDetailViewModel", "onCleared")
     }
+
+    fun getElapsedTime(startTime: Long): String = "걸린 시간 : ${System.currentTimeMillis() - startTime}ms"
 }
 
 
@@ -268,3 +274,4 @@ sealed class DetailUiEvent {
     data object ManageGuest : DetailUiEvent()
     data class NavigateChat(val chat: Screen.Chat) : DetailUiEvent()
 }
+

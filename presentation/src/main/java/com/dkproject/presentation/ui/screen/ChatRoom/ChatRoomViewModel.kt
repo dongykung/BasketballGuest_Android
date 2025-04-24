@@ -10,11 +10,13 @@ import com.dkproject.presentation.R
 import com.dkproject.presentation.di.ResourceProvider
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,8 +31,8 @@ class ChatRoomViewModel @Inject constructor(
     companion object {
         private const val TIMEOUT_MILLIS = 5_000L
     }
-    private val _uiEvent = MutableSharedFlow<ChatRoomUiEvent>()
-    val uiEvent = _uiEvent.asSharedFlow()
+    private val _uiEvent = Channel<ChatRoomUiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
 
     val chatRoomList: StateFlow<List<ChatRoom>> = getChatRoomListUseCase()
         .stateIn(
@@ -44,7 +46,7 @@ class ChatRoomViewModel @Inject constructor(
         startListeningToChatRooms()
         viewModelScope.launch {
             val myUid = getCurrentUserId() ?: return@launch
-            _uiEvent.emit( ChatRoomUiEvent.MyUid(myUid))
+            _uiEvent.send( ChatRoomUiEvent.MyUid(myUid))
         }
     }
 
@@ -63,8 +65,8 @@ class ChatRoomViewModel @Inject constructor(
 
     private suspend fun getCurrentUserId(): String? {
         return auth.currentUser?.uid ?: run {
-            _uiEvent.emit(ChatRoomUiEvent.ShowToast(resourceProvider.getString(R.string.loselogin)))
-            _uiEvent.emit(ChatRoomUiEvent.NavigateToLogin)
+            _uiEvent.send(ChatRoomUiEvent.ShowToast(resourceProvider.getString(R.string.loselogin)))
+            _uiEvent.send(ChatRoomUiEvent.NavigateToLogin)
             null
         }
     }

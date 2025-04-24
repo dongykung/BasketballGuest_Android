@@ -173,7 +173,7 @@ fun ChatList(
                 )
             }
         }
-        items(chatList.itemCount, key = { chatList[it]?.id ?: it }) {
+        items(chatList.itemCount, key = { chatList.peek(it)?.id ?: it }) {
             val chat = chatList[it] ?: return@items
             if (chat.sender == otherUserUid) {
                 OtherUserChat(

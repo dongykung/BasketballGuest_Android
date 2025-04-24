@@ -18,10 +18,12 @@ import com.dkproject.presentation.di.ResourceProvider
 import com.dkproject.presentation.ui.screen.login.GoogleSignInClient
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okio.FileNotFoundException
@@ -45,8 +47,8 @@ class MyPageViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(MyPageViewState())
     val uiState = _uiState.asStateFlow()
 
-    private val _uiEvent = MutableSharedFlow<MyPageUiEvent>()
-    val uiEvent = _uiEvent.asSharedFlow()
+    private val _uiEvent = Channel<MyPageUiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
 
     init {
         loadMyData()
@@ -73,18 +75,18 @@ class MyPageViewModel @Inject constructor(
                 if(result) {
                     updateUserNicknameUseCase(userUid = myUid, nickname = name).fold(
                         onSuccess = {
-                            _uiEvent.emit(MyPageUiEvent.CompleteChangeNickname)
+                            _uiEvent.send(MyPageUiEvent.CompleteChangeNickname)
                             loadMyData()
                         },
                         onFailure = { throw Exception() }
                     )
                 } else {
                     _uiState.update { it.copy(isUpdateLoading = false) }
-                    _uiEvent.emit(MyPageUiEvent.ShowToast(resourceProvider.getString(R.string.existnickname)))
+                    _uiEvent.send(MyPageUiEvent.ShowToast(resourceProvider.getString(R.string.existnickname)))
                 }
             } catch (e: Exception) {
                 _uiState.update { it.copy(isUpdateLoading = false) }
-                _uiEvent.emit(MyPageUiEvent.ShowToast(resourceProvider.getString(R.string.failchangenickname)))
+                _uiEvent.send(MyPageUiEvent.ShowToast(resourceProvider.getString(R.string.failchangenickname)))
             }
         }
     }
@@ -144,14 +146,14 @@ class MyPageViewModel @Inject constructor(
 
     private suspend fun getCurrentUserId(): String? {
         return auth.currentUser?.uid ?: run {
-            _uiEvent.emit(MyPageUiEvent.ShowToast(resourceProvider.getString(R.string.loselogin)))
-            _uiEvent.emit(MyPageUiEvent.NavigateToLogin)
+            _uiEvent.send(MyPageUiEvent.ShowToast(resourceProvider.getString(R.string.loselogin)))
+            _uiEvent.send(MyPageUiEvent.NavigateToLogin)
             null
         }
     }
 
     private  suspend fun errorHandling(errorMessage: String) {
-        _uiEvent.emit(MyPageUiEvent.ShowToast(errorMessage))
+        _uiEvent.send(MyPageUiEvent.ShowToast(errorMessage))
         _uiState.update { it.copy(isUpdateLoading = false) }
     }
 

@@ -38,7 +38,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -71,6 +70,7 @@ import com.dkproject.presentation.ui.component.button.DefaultButton
 import com.dkproject.presentation.ui.component.util.ErrorScreen
 import com.dkproject.presentation.ui.component.util.LoadingScreen
 import com.dkproject.presentation.ui.theme.AppTheme
+import com.dkproject.presentation.util.collectOnStarted
 import com.dkproject.presentation.util.GetUserStatusString
 import com.dkproject.presentation.util.guestPostDummy
 import com.naver.maps.geometry.LatLng
@@ -82,12 +82,12 @@ import com.naver.maps.map.compose.Marker
 import com.naver.maps.map.compose.MarkerState
 import com.naver.maps.map.compose.NaverMap
 import com.naver.maps.map.compose.rememberCameraPositionState
-import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.Flow
 
 @Composable
 fun GuestDetailScreen(
     uiState: PostDetailUiState,
-    uiEvent: SharedFlow<DetailUiEvent>,
+    uiEvent: Flow<DetailUiEvent>,
     snackbarHostState: SnackbarHostState,
     loseLoginInfo: () -> Unit = {},     // 로그인 정보 잃음
     navPopBackStack: () -> Unit = {},   // 뒤로가기
@@ -104,22 +104,20 @@ fun GuestDetailScreen(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    LaunchedEffect(uiEvent) {
-        uiEvent.collect { event ->
-            when (event) {
-                DetailUiEvent.LoseLoginInfo -> {}
-                DetailUiEvent.ManageGuest -> navigateToMange()
-                DetailUiEvent.DeleteCompletedPost -> onDeleteBack()
-                is DetailUiEvent.ShowSnackbar -> snackbarHostState.showSnackbar(event.message)
-                is DetailUiEvent.NoSuchData -> {
-                    Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
-                    navPopBackStack()
-                }
-                is DetailUiEvent.NavigateChat -> {
-                    navigateToChat(event.chat)
-                }
-                DetailUiEvent.PopBackStack -> navPopBackStack()
+    uiEvent.collectOnStarted { event ->
+        when(event) {
+            DetailUiEvent.LoseLoginInfo -> {}
+            DetailUiEvent.ManageGuest -> navigateToMange()
+            DetailUiEvent.DeleteCompletedPost -> onDeleteBack()
+            is DetailUiEvent.ShowSnackbar -> snackbarHostState.showSnackbar(event.message)
+            is DetailUiEvent.NoSuchData -> {
+                Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+                navPopBackStack()
             }
+            is DetailUiEvent.NavigateChat -> {
+                navigateToChat(event.chat)
+            }
+            DetailUiEvent.PopBackStack -> navPopBackStack()
         }
     }
     when (uiState.dataState) {

@@ -27,6 +27,7 @@ import com.dkproject.presentation.ui.component.button.GoogleConfig
 import com.dkproject.presentation.ui.component.button.KakaoConfig
 import com.dkproject.presentation.ui.component.button.SocialButton
 import com.dkproject.presentation.ui.theme.AppTheme
+import com.dkproject.presentation.util.collectOnStarted
 
 @Composable
 fun LoginScreen(
@@ -36,16 +37,15 @@ fun LoginScreen(
     moveToSignUp: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    LaunchedEffect(viewModel.uiEvent) {
-        viewModel.uiEvent.collect { event ->
-            when(event) {
-                is LoginUiEvent.MoveToHome -> moveToHome()
-                is LoginUiEvent.MoveToSignUp -> moveToSignUp()
-                is LoginUiEvent.ShowSnackbar -> {
-                    snackbarHostState.showSnackbar(event.message)
-                }
+    viewModel.uiEvent.collectOnStarted { event ->
+        when(event) {
+            is LoginUiEvent.MoveToHome -> moveToHome()
+            is LoginUiEvent.MoveToSignUp -> moveToSignUp()
+            is LoginUiEvent.ShowSnackbar -> {
+                snackbarHostState.showSnackbar(event.message)
             }
         }
+
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
