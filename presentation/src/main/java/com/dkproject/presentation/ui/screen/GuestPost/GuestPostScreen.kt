@@ -36,6 +36,8 @@ import com.dkproject.presentation.R
 import com.dkproject.presentation.model.GuestPostUiModel
 import com.dkproject.presentation.model.Position
 import com.dkproject.presentation.ui.theme.AppTheme
+import com.dkproject.presentation.util.collectOnStarted
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.emptyFlow
@@ -45,7 +47,7 @@ import java.util.Date
 @Composable
 fun GuestPostScreen(
     uiState: GuestPostState,
-    uiEvent: SharedFlow<PostUiEvent>,
+    uiEvent: Flow<PostUiEvent>,
     snackbarHostState: SnackbarHostState,
     updateCurrentStep: (GuestPostStep) -> Unit = {},
     titleChange: (String) -> Unit = {},
@@ -62,13 +64,11 @@ fun GuestPostScreen(
     onBackClick: () -> Unit = {}
 ) {
 
-    LaunchedEffect(uiEvent) {
-        uiEvent.collect { event ->
-            when (event) {
-                is PostUiEvent.ShowSnackbar -> snackbarHostState.showSnackbar(message = event.message)
-                PostUiEvent.UploadComplete -> onUpload()
-                PostUiEvent.UpdateComplete -> onEdit()
-            }
+    uiEvent.collectOnStarted {
+        when (it) {
+            is PostUiEvent.ShowSnackbar -> snackbarHostState.showSnackbar(message = it.message)
+            PostUiEvent.UploadComplete -> onUpload()
+            PostUiEvent.UpdateComplete -> onEdit()
         }
     }
 

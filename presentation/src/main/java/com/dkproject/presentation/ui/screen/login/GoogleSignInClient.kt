@@ -84,6 +84,7 @@ class GoogleSignInClient @Inject constructor(
             try {
                 val tokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
                 val authCredential = GoogleAuthProvider.getCredential(tokenCredential.idToken, null)
+                Log.d("googleSignIn", "signIn: ${tokenCredential.idToken}")
                 val authResult = firebaseAuth.signInWithCredential(authCredential).await()
                 return SignInResult.Success(authResult.user?.uid ?: "")
             } catch (e: GoogleIdTokenParsingException) {

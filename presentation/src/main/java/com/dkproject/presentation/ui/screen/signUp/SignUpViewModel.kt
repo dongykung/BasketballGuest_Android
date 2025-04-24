@@ -14,10 +14,12 @@ import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -35,8 +37,8 @@ class SignUpViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(SignUpViewState())
     val uiState = _uiState.asStateFlow()
 
-    private val _uiEvent = MutableSharedFlow<SignUpUiEvent>()
-    val uiEvent = _uiEvent.asSharedFlow()
+    private val _uiEvent = Channel<SignUpUiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
 
     init {
         Log.d("SignUpViewModel", "${auth.currentUser?.uid}")
@@ -86,12 +88,12 @@ class SignUpViewModel @Inject constructor(
                     if (result) {
                         _uiState.update { it.copy(currentStep = SignUpStep.UserInfo) }
                     } else {
-                        _uiEvent.emit(SignUpUiEvent.ShowSnackbar(context.getString(R.string.existnickname)))
+                        _uiEvent.send(SignUpUiEvent.ShowSnackbar(context.getString(R.string.existnickname)))
                     }
                     _uiState.update { it.copy(isLoading = false) }
                 },
                 onFailure = {
-                    _uiEvent.emit(SignUpUiEvent.ShowSnackbar(context.getString(R.string.failchecknickname)))
+                    _uiEvent.send(SignUpUiEvent.ShowSnackbar(context.getString(R.string.failchecknickname)))
                     _uiState.update { it.copy(isLoading = false) }
                 }
             )
@@ -132,10 +134,10 @@ class SignUpViewModel @Inject constructor(
             setFcmTokenUseCase(uiState.value.user.id)
             result.fold(
                 onSuccess = {
-                    _uiEvent.emit(SignUpUiEvent.MoveToHome)
+                    _uiEvent.send(SignUpUiEvent.MoveToHome)
                 },
                 onFailure = {
-                    _uiEvent.emit(SignUpUiEvent.ShowSnackbar(context.getString(R.string.failsignup)))
+                    _uiEvent.send(SignUpUiEvent.ShowSnackbar(context.getString(R.string.failsignup)))
                     _uiState.update { it.copy(isLoading = false) }
                 }
             )

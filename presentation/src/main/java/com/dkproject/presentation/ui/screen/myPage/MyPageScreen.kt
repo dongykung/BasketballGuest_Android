@@ -65,6 +65,7 @@ import com.dkproject.presentation.ui.component.sheet.ChangeNicknameSheet
 import com.dkproject.presentation.ui.component.util.ErrorScreen
 import com.dkproject.presentation.ui.component.util.LoadingScreen
 import com.dkproject.presentation.ui.component.wheelpicker.IntWheelPicker
+import com.dkproject.presentation.util.collectOnStarted
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -81,24 +82,23 @@ fun MyPageScreen(
     var isEditWeight by remember { mutableStateOf(false) }
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
-    LaunchedEffect(viewModel.uiEvent) {
-        viewModel.uiEvent.collect { event ->
-            when (event) {
-                MyPageUiEvent.NavigateToLogin -> {
-                    moveToLogin()
-                }
+    viewModel.uiEvent.collectOnStarted { event ->
+        when (event) {
+            MyPageUiEvent.NavigateToLogin -> {
+                moveToLogin()
+            }
 
-                MyPageUiEvent.CompleteChangeNickname -> isEditNickname = false
-                is MyPageUiEvent.ShowToast -> {
-                    Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
-                }
+            MyPageUiEvent.CompleteChangeNickname -> isEditNickname = false
+            is MyPageUiEvent.ShowToast -> {
+                Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+            }
 
-                is MyPageUiEvent.ShowSnackBar -> {
-                    snackbarHostState.showSnackbar(event.message)
-                }
+            is MyPageUiEvent.ShowSnackBar -> {
+                snackbarHostState.showSnackbar(event.message)
             }
         }
     }
+
     Box(modifier = modifier) {
         Column {
             TopAppBar(title = { Text(text = stringResource(R.string.myInfo)) })

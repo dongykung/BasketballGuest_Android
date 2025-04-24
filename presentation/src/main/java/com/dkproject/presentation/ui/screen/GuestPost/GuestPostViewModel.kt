@@ -19,10 +19,12 @@ import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -38,8 +40,8 @@ class GuestPostViewModel @Inject constructor(
     @ApplicationContext val context: Context
 ) : ViewModel() {
 
-    private val _uiEvent = MutableSharedFlow<PostUiEvent>()
-    val uiEvent = _uiEvent.asSharedFlow()
+    private val _uiEvent = Channel<PostUiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
 
     private val _uiState = MutableStateFlow(GuestPostState())
     val uiState = _uiState.asStateFlow()
@@ -146,11 +148,11 @@ class GuestPostViewModel @Inject constructor(
         val myUid = auth.currentUser?.uid
         viewModelScope.launch {
             if (myUid == null) {
-                _uiEvent.emit(PostUiEvent.ShowSnackbar(context.getString(R.string.loselogin)))
+                _uiEvent.send(PostUiEvent.ShowSnackbar(context.getString(R.string.loselogin)))
                 return@launch
             }
             if (!isNetworkAvailable(context)) {
-                _uiEvent.emit(PostUiEvent.ShowSnackbar(context.getString(R.string.networkerror)))
+                _uiEvent.send(PostUiEvent.ShowSnackbar(context.getString(R.string.networkerror)))
                 return@launch
             }
             _uiState.update {
@@ -165,11 +167,11 @@ class GuestPostViewModel @Inject constructor(
             }
             result.fold(
                 onSuccess = {
-                    if(uiState.value.isEditMode) _uiEvent.emit(PostUiEvent.UpdateComplete)
-                    else _uiEvent.emit(PostUiEvent.UploadComplete)
+                    if(uiState.value.isEditMode) _uiEvent.send(PostUiEvent.UpdateComplete)
+                    else _uiEvent.send(PostUiEvent.UploadComplete)
                 },
                 onFailure = { e ->
-                    _uiEvent.emit(PostUiEvent.ShowSnackbar(getErrorMessage(e)))
+                    _uiEvent.send(PostUiEvent.ShowSnackbar(getErrorMessage(e)))
                     _uiState.update { it.copy(isLoading = false) }
                 }
             )

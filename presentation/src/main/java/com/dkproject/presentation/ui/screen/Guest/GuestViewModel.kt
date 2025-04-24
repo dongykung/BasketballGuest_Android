@@ -75,7 +75,3 @@ data class GuestListUiState(
     val guestFilter: GuestFilterUiModel = GuestFilterUiModel(selectedDate = null),
     val isLoading: Boolean = false
 )
-
-sealed class GuestUiEvent {
-    data class ShowSnackbar(val message: String) : GuestUiEvent()
-}

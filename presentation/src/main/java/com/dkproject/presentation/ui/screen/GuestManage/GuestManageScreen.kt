@@ -30,7 +30,6 @@ import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -63,13 +62,14 @@ import com.dkproject.presentation.ui.component.button.AcceptButton
 import com.dkproject.presentation.ui.component.button.RejectButton
 import com.dkproject.presentation.ui.component.util.ErrorScreen
 import com.dkproject.presentation.ui.component.util.LoadingScreen
+import com.dkproject.presentation.util.collectOnStarted
 import com.dkproject.presentation.util.getGuestManageStatusString
-import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.Flow
 
 @Composable
 fun GuestManageScreen(
     uiState: GuestManageUiState,
-    uiEvent: SharedFlow<GuestManageUiEvent>,
+    uiEvent: Flow<GuestManageUiEvent>,
     snackbarHostState: SnackbarHostState,
     onBackClick: () -> Unit,
     onAcceptClick: (String) -> Unit = {},
@@ -80,12 +80,10 @@ fun GuestManageScreen(
     val changeStatusItems = uiState.changeStatusItems
     val isRefreshLoading = uiState.isRefreshLoading
 
-    LaunchedEffect(uiEvent) {
-        uiEvent.collect { event ->
-            when (event) {
-                is GuestManageUiEvent.ShowMessage -> {
-                    snackbarHostState.showSnackbar(event.message)
-                }
+    uiEvent.collectOnStarted {
+        when (it) {
+            is GuestManageUiEvent.ShowMessage -> {
+                snackbarHostState.showSnackbar(it.message)
             }
         }
     }

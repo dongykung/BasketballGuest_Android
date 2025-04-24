@@ -5,12 +5,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dkproject.domain.usecase.auth.CheckFirstUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,8 +27,8 @@ class LoginViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(LoginViewState())
     val uiState: StateFlow<LoginViewState> = _uiState.asStateFlow()
 
-    private val _uiEvent = MutableSharedFlow<LoginUiEvent>()
-    val uiEvent: SharedFlow<LoginUiEvent> = _uiEvent.asSharedFlow()
+    private val _uiEvent = Channel<LoginUiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
 
     fun signInWithGoogle() {
         _uiState.update { it.copy(isLoading = true) }
@@ -35,19 +37,19 @@ class LoginViewModel @Inject constructor(
                 when (val result = googleAuthClient.signIn()) {
 
                     is SignInResult.Failure -> {
-                        _uiEvent.emit(LoginUiEvent.ShowSnackbar(result.errorMessage))
+                        _uiEvent.send(LoginUiEvent.ShowSnackbar(result.errorMessage))
                     }
 
                     is SignInResult.Success -> {
                         if (checkFirstUserUseCase(result.userUid).getOrThrow()) {
-                            _uiEvent.emit(LoginUiEvent.MoveToHome)
+                            _uiEvent.send(LoginUiEvent.MoveToHome)
                         } else {
-                            _uiEvent.emit(LoginUiEvent.MoveToSignUp)
+                            _uiEvent.send(LoginUiEvent.MoveToSignUp)
                         }
                     }
                 }
             } catch (e: Throwable) {
-                _uiEvent.emit(LoginUiEvent.ShowSnackbar("로그인에 실패했습니다 다시 시도해 주세요."))
+                _uiEvent.send(LoginUiEvent.ShowSnackbar("로그인에 실패했습니다 다시 시도해 주세요."))
             }
             _uiState.update { it.copy(isLoading = false) }
         }
@@ -59,21 +61,21 @@ class LoginViewModel @Inject constructor(
             try {
                 when (val result = kakaoAuthClient.signInWithKakao()) {
                     is SignInResult.Failure -> {
-                        _uiEvent.emit(LoginUiEvent.ShowSnackbar(result.errorMessage))
+                        _uiEvent.send(LoginUiEvent.ShowSnackbar(result.errorMessage))
                         Log.d("LoginViewModel", result.errorMessage)
 
                     }
 
                     is SignInResult.Success -> {
                         if (checkFirstUserUseCase(result.userUid).getOrThrow()) {
-                            _uiEvent.emit(LoginUiEvent.MoveToHome)
+                            _uiEvent.send(LoginUiEvent.MoveToHome)
                         } else {
-                            _uiEvent.emit(LoginUiEvent.MoveToSignUp)
+                            _uiEvent.send(LoginUiEvent.MoveToSignUp)
                         }
                     }
                 }
             } catch (e: Throwable) {
-                _uiEvent.emit(LoginUiEvent.ShowSnackbar("로그인에 실패했습니다 다시 시도해 주세요."))
+                _uiEvent.send(LoginUiEvent.ShowSnackbar("로그인에 실패했습니다 다시 시도해 주세요."))
             }
             _uiState.update { it.copy(isLoading = false) }
         }

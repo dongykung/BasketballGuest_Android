@@ -14,6 +14,7 @@ import com.dkproject.presentation.R
 import com.dkproject.presentation.di.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,6 +23,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -37,8 +39,8 @@ class GuestManageViewModel @Inject constructor(
         MutableStateFlow(GuestManageUiState())
     val uiState: StateFlow<GuestManageUiState> = _uiState.asStateFlow()
 
-    private val _uiEvent = MutableSharedFlow<GuestManageUiEvent>()
-    val uiEvent = _uiEvent.asSharedFlow()
+    private val _uiEvent = Channel<GuestManageUiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
 
     fun getManageList(postId: String) {
         _uiState.update {
@@ -104,12 +106,12 @@ class GuestManageViewModel @Inject constructor(
     private suspend fun errorHandling(e: Throwable) {
         updateIsLoadingState(false)
         when (e) {
-            is DomainError.DocumentNotFound -> _uiEvent.emit(
+            is DomainError.DocumentNotFound -> _uiEvent.send(
                 GuestManageUiEvent.ShowMessage(
                     resourceProvider.getString(R.string.managenotfound)
                 )
             )
-            else -> _uiEvent.emit(GuestManageUiEvent.ShowMessage(resourceProvider.getString(R.string.failreject)))
+            else -> _uiEvent.send(GuestManageUiEvent.ShowMessage(resourceProvider.getString(R.string.failreject)))
         }
     }
 }

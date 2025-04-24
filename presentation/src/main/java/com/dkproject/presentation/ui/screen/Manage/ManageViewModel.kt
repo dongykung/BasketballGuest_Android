@@ -13,6 +13,7 @@ import com.dkproject.presentation.model.toUiModel
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -34,8 +36,8 @@ class ManageViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ManageUiState())
     val uiState = _uiState.asStateFlow()
 
-    private val _uiEvent = MutableSharedFlow<ManageUiEvent>()
-    val uiEvent = _uiEvent.asSharedFlow()
+    private val _uiEvent = Channel<ManageUiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
 
     init {
         viewModelScope.launch {
@@ -74,7 +76,7 @@ class ManageViewModel @Inject constructor(
 
     private suspend fun getCurrentUserId(): String? {
         return auth.currentUser?.uid ?: run {
-            _uiEvent.emit(ManageUiEvent.LoseLoginInfo)
+            _uiEvent.send(ManageUiEvent.LoseLoginInfo)
             null
         }
     }
