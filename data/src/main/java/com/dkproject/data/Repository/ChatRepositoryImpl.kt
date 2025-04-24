@@ -1,7 +1,11 @@
 package com.dkproject.data.Repository
 
 import android.util.Log
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.dkproject.data.data.local.ChatDao
+import com.dkproject.data.data.paging.ChatPagingSource
 import com.dkproject.data.model.ChatDTO
 import com.dkproject.data.model.toDTO
 import com.dkproject.data.util.mapDomainError
@@ -26,10 +30,18 @@ class ChatRepositoryImpl @Inject constructor(
     private val chatDao: ChatDao,
     private val firestore: FirebaseFirestore,
 ) : ChatRepository {
-    override fun getChatsByChatRoomId(chatRoomId: String): Flow<List<Chat>> {
-        return chatDao.getChatsByChatRoomId(chatRoomId = chatRoomId)
-            .map { list -> list.map { it.toDomain() } }
-            .flowOn(context = Dispatchers.IO)
+    override fun getChatsByChatRoomId(chatRoomId: String): Flow<PagingData<Chat>> {
+        return Pager(
+            config = PagingConfig(
+                initialLoadSize = 20, pageSize = 20, prefetchDistance = 2, enablePlaceholders = false
+            ),
+            pagingSourceFactory = {
+                ChatPagingSource(
+                    dao = chatDao,
+                    chatRoomId = chatRoomId,
+                )
+            }
+        ).flow
     }
 
     override fun listenToChats(myUid: String, chatRoomId: String): Flow<Unit> = callbackFlow {
@@ -48,7 +60,10 @@ class ChatRepositoryImpl @Inject constructor(
                             if (chat.sender != myUid && !chat.readBy.contains(myUid)) {
                                 firestore.collection("Chat").document(chatRoomId)
                                     .collection("Message").document(diff.document.id)
-                                    .update("readBy", FieldValue.arrayUnion(myUid)).await()
+                                    .update(mapOf(
+                                        "readBy" to FieldValue.arrayUnion(myUid),
+                                        "allRead" to true
+                                    )).await()
                                 firestore.collection("Chat").document(chatRoomId)
                                     .update("readStatus.${myUid}", Date()).await()
                             }
@@ -83,4 +98,10 @@ class ChatRepositoryImpl @Inject constructor(
                 .await()
             Unit
         }.mapDomainError()
+
+    override fun getLatestMessageFlow(chatRoomId: String, lastFetched: Long): Flow<List<Chat>> {
+        return chatDao.getLatestMessageFlow(chatRoomId, lastFetched = lastFetched)
+            .map { list -> list.map { it.toDomain() } }
+            .flowOn(context = Dispatchers.IO)
+    }
 }

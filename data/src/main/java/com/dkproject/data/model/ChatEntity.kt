@@ -13,7 +13,8 @@ data class ChatEntity(
     val message: String,
     val sender: String,
     val readBy: List<String>,
-    val createAt: Date
+    val createAt: Date,
+    val isAllRead: Boolean,
 
 ) {
     fun toDomain(): Chat {

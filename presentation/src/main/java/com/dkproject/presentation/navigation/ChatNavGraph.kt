@@ -52,8 +52,9 @@ fun NavGraphBuilder.chatNavGraph(
     composable<Screen.Chat> { backStackEntry ->
         val chat: Screen.Chat = backStackEntry.toRoute()
         val viewModel: ChatViewModel = hiltViewModel()
-        val uiState by viewModel.uiState.collectAsState()
+
         LaunchedEffect(chat) {
+            Log.d("chat", "getChatList")
             viewModel.getChatList(chatRoomId = chat.chatRoomId)
         }
         LaunchedEffect(viewModel.uiEvent) {
@@ -67,16 +68,18 @@ fun NavGraphBuilder.chatNavGraph(
             }
         }
         ChatScreen(
+            viewModel = viewModel,
             otherUserUid = chat.otherUserUid,
             otherUserNickname = chat.otherUserName,
             otherUserProfile = chat.otherProfileUrl,
             onBackClick = { navController.popBackStack() },
-            chatList = uiState.chatList,
-            chatMessage = uiState.chatMessage,
             onSendClick = {
                 viewModel.sendMessage(chat)
             },
             updateChatMessage = viewModel::updateChatMessage,
+            fetchedLastMessages = { lastFetched ->
+                viewModel.getLatestMessage(chatRoomId = chat.chatRoomId, lastFetched = lastFetched)
+            },
             modifier = Modifier.fillMaxSize()
         )
     }
